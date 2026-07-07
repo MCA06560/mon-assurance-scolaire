@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Assurance Scolaire — Back-office Admin</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --green: #1D9E75; --green-dim: rgba(29,158,117,0.12); --green-dark: #0F6E52;
+  --navy: #0B1F3A; --bg: #090f1a; --surf: #0f1825; --surf2: #162030;
+  --border: rgba(255,255,255,0.07); --text: #e2e8f0; --muted: rgba(255,255,255,0.38);
+  --amber: #F59E0B; --blue: #60A5FA; --red: #F87171; --purple: #c084fc;
+  --claude: #D97706;
+  --sidebar-w: 220px;
+  --chat-w: 380px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; }
+
+/* ══ SIDEBAR ══ */
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: var(--surf); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  height: 100vh; overflow-y: auto; position: relative; z-index: 10;
+}
+
+.s-logo { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); }
+.s-logo-row { display: flex; align-items: center; gap: 9px; }
+.s-logo-mark { width: 30px; height: 30px; background: var(--green); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.s-logo-name { font-size: 15px; font-weight: 700; color: #fff; }
+.s-logo-sub { font-size: 10px; color: var(--muted); }
+.s-product { margin-top: 10px; font-size: 10px; background: var(--green-dim); color: var(--green); padding: 4px 10px; border-radius: 6px; display: inline-block; font-weight: 500; }
+
+.s-section { padding: 12px 10px 4px; }
+.s-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding: 0 8px; margin-bottom: 5px; }
+.s-item {
+  display: flex; align-items: center; gap: 9px; padding: 8px 10px;
+  border-radius: 8px; font-size: 13px; color: var(--muted);
+  cursor: pointer; margin-bottom: 2px; transition: all .15s;
+}
+.s-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.s-item.active { background: var(--green-dim); color: var(--green); }
+.s-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+.s-badge { margin-left: auto; background: var(--green); color: white; font-size: 9px; padding: 1px 6px; border-radius: 8px; font-weight: 600; }
+
+/* ── Claude AI nav item special ── */
+.s-item.claude-nav {
+  background: linear-gradient(135deg, rgba(217,119,6,0.12), rgba(251,191,36,0.06));
+  color: var(--amber);
+  border: 1px solid rgba(217,119,6,0.2);
+  margin: 4px 4px;
+}
+.s-item.claude-nav:hover { background: linear-gradient(135deg, rgba(217,119,6,0.2), rgba(251,191,36,0.1)); }
+.s-item.claude-nav.active { background: linear-gradient(135deg, rgba(217,119,6,0.22), rgba(251,191,36,0.1)); border-color: var(--amber); }
+.claude-pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); margin-left: auto; animation: pulse 2s infinite; flex-shrink: 0; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)} }
+
+.s-bottom { margin-top: auto; padding: 12px 10px; border-top: 1px solid var(--border); }
+
+/* ══ MAIN ══ */
+.main { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; min-width: 0; }
+
+/* ══ TOPBAR ══ */
+.topbar {
+  background: var(--surf); border-bottom: 1px solid var(--border);
+  padding: 12px 24px; display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.topbar-title { font-size: 16px; font-weight: 600; color: #fff; }
+.topbar-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.btn { padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: all .15s; }
+.btn-primary { background: var(--green); color: white; }
+.btn-secondary { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.7); }
+.btn-primary:hover { background: var(--green-dark); }
+
+/* ══ PAGES ══ */
+.content { flex: 1; overflow-y: auto; }
+.page { display: none; padding: 22px 24px; }
+.page.active { display: block; }
+
+/* cards */
+.card { background: var(--surf2); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px; }
+.card-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 13px; font-weight: 600; color: #fff; }
+.card-body { padding: 18px; }
+
+/* stats */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.stat-card { background: var(--surf2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.stat-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; line-height: 1.4; }
+.stat-val { font-size: 20px; font-weight: 700; }
+.stat-val.g { color: var(--green); } .stat-val.r { color: var(--red); } .stat-val.w { color: #fff; } .stat-val.a { color: var(--amber); }
+.stat-sub { font-size: 10px; color: rgba(255,255,255,0.2); margin-top: 3px; }
+
+/* tables */
+.t { width: 100%; border-collapse: collapse; font-size: 12px; }
+.t th { background: rgba(255,255,255,0.04); color: var(--muted); padding: 9px 12px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .5px; }
+.t td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,.75); }
+.t tr:last-child td { border-bottom: none; }
+.t tr:hover td { background: rgba(255,255,255,0.02); }
+.badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 8px; font-weight: 500; }
+.badge-g { background: var(--green-dim); color: var(--green); }
+.badge-a { background: rgba(245,158,11,0.12); color: var(--amber); }
+.badge-r { background: rgba(248,113,113,0.12); color: var(--red); }
+
+/* totaux bordereau */
+.totaux { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-top: 18px; }
+.total-card { border-radius: 10px; padding: 14px 16px; border: 1px solid; }
+.total-card.prime { background: rgba(96,165,250,.05); border-color: rgba(96,165,250,.2); }
+.total-card.taxe { background: rgba(245,158,11,.05); border-color: rgba(245,158,11,.2); }
+.total-card.comm { background: rgba(29,158,117,.05); border-color: rgba(29,158,117,.2); }
+.total-card.rev { background: rgba(248,113,113,.05); border-color: rgba(248,113,113,.2); }
+.total-label { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 7px; opacity: .6; }
+.total-val { font-size: 22px; font-weight: 700; }
+.total-card.prime .total-label, .total-card.prime .total-val { color: var(--blue); }
+.total-card.taxe .total-label, .total-card.taxe .total-val { color: var(--amber); }
+.total-card.comm .total-label, .total-card.comm .total-val { color: var(--green); }
+.total-card.rev .total-label, .total-card.rev .total-val { color: var(--red); }
+
+/* ══ CHAT CLAUDE AI ══ */
+.chat-panel {
+  width: var(--chat-w); flex-shrink: 0;
+  background: var(--surf);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  height: 100vh;
+  transition: width .3s ease;
+  position: relative; z-index: 5;
+}
+
+.chat-panel.collapsed { width: 48px; }
+
+.chat-header {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0; background: var(--surf);
+}
+
+.chat-header-icon {
+  width: 32px; height: 32px; flex-shrink: 0;
+  background: linear-gradient(135deg, #D97706, #F59E0B);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(217,119,6,0.3);
+}
+
+.chat-header-text { flex: 1; min-width: 0; }
+.chat-header-title { font-size: 13px; font-weight: 700; color: #fff; }
+.chat-header-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.chat-status { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--green); }
+.chat-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+
+.chat-collapse-btn {
+  width: 26px; height: 26px; border-radius: 6px;
+  background: rgba(255,255,255,0.06); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); flex-shrink: 0; transition: all .15s;
+}
+.chat-collapse-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+/* Contexte actif */
+.chat-context-bar {
+  padding: 8px 16px;
+  background: rgba(217,119,6,0.07);
+  border-bottom: 1px solid rgba(217,119,6,0.15);
+  font-size: 11px; color: rgba(255,255,255,0.5);
+  display: flex; align-items: center; gap: 7px;
+  flex-shrink: 0;
+}
+.chat-context-label { color: var(--amber); font-weight: 600; }
+
+/* Messages */
+.chat-messages {
+  flex: 1; overflow-y: auto;
+  padding: 16px; display: flex; flex-direction: column; gap: 12px;
+}
+
+.chat-msg { display: flex; flex-direction: column; gap: 4px; max-width: 100%; }
+.chat-msg.user { align-items: flex-end; }
+.chat-msg.assistant { align-items: flex-start; }
+
+.chat-msg-bubble {
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 13px; line-height: 1.55;
+  max-width: 90%;
+}
+
+.chat-msg.user .chat-msg-bubble {
+  background: var(--green); color: white;
+  border-radius: 14px 14px 4px 14px;
+}
+
+.chat-msg.assistant .chat-msg-bubble {
+  background: var(--surf2); color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 14px 14px 14px 4px;
+}
+
+.chat-msg.assistant .chat-msg-bubble.action {
+  background: rgba(217,119,6,0.08);
+  border-color: rgba(217,119,6,0.25);
+}
+
+.chat-msg-time { font-size: 10px; color: var(--muted); padding: 0 4px; }
+
+/* Action tags dans les réponses */
+.action-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(29,158,117,0.15); color: var(--green);
+  font-size: 10px; font-weight: 600;
+  padding: 2px 8px; border-radius: 6px;
+  margin-bottom: 6px; font-family: 'DM Mono', monospace;
+}
+
+/* Code inline dans les bulles */
+.chat-msg-bubble code {
+  background: rgba(255,255,255,0.08);
+  padding: 1px 5px; border-radius: 4px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--blue);
+}
+
+/* Typing indicator */
+.typing-indicator {
+  display: flex; align-items: center; gap: 4px;
+  padding: 10px 14px;
+  background: var(--surf2); border: 1px solid var(--border);
+  border-radius: 14px 14px 14px 4px;
+  width: fit-content;
+}
+.typing-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--muted); animation: typing 1.2s ease infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: .2s; }
+.typing-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes typing { 0%,80%,100%{transform:scale(.8);opacity:.4} 40%{transform:scale(1);opacity:1} }
+
+/* Suggestions rapides */
+.chat-suggestions {
+  padding: 10px 16px 0;
+  display: flex; flex-wrap: wrap; gap: 6px;
+  flex-shrink: 0;
+}
+.suggestion-chip {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 11px; color: var(--muted);
+  cursor: pointer; transition: all .15s;
+  white-space: nowrap;
+}
+.suggestion-chip:hover { border-color: var(--amber); color: var(--amber); background: rgba(217,119,6,0.08); }
+
+/* Input zone */
+.chat-input-zone {
+  padding: 12px 16px 14px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.chat-input-row {
+  display: flex; gap: 8px; align-items: flex-end;
+}
+
+.chat-input {
+  flex: 1;
+  background: var(--surf2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px; color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  outline: none; resize: none;
+  min-height: 42px; max-height: 120px;
+  line-height: 1.5;
+  transition: border-color .15s;
+}
+.chat-input:focus { border-color: var(--amber); }
+.chat-input::placeholder { color: var(--muted); }
+
+.chat-send-btn {
+  width: 40px; height: 40px; flex-shrink: 0;
+  background: var(--amber);
+  border: none; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .15s;
+  color: white;
+}
+.chat-send-btn:hover { background: #D97706; transform: translateY(-1px); }
+.chat-send-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+/* Panneau réduit */
+.chat-panel.collapsed .chat-context-bar,
+.chat-panel.collapsed .chat-messages,
+.chat-panel.collapsed .chat-suggestions,
+.chat-panel.collapsed .chat-input-zone,
+.chat-header-text, .chat-status {
+  transition: opacity .2s;
+}
+.chat-panel.collapsed .chat-header-text,
+.chat-panel.collapsed .chat-status,
+.chat-panel.collapsed .chat-context-bar,
+.chat-panel.collapsed .chat-messages,
+.chat-panel.collapsed .chat-suggestions,
+.chat-panel.collapsed .chat-input-zone { display: none; }
+
+.chat-expand-hint {
+  display: none;
+  flex-direction: column; align-items: center; gap: 16px;
+  padding: 20px 0; cursor: pointer;
+}
+.chat-panel.collapsed .chat-expand-hint { display: flex; }
+
+/* Note API */
+.api-note {
+  background: rgba(217,119,6,0.07); border: 1px solid rgba(217,119,6,0.2);
+  border-radius: 10px; padding: 12px 14px; margin-bottom: 14px;
+  font-size: 11px; color: rgba(255,255,255,0.55); line-height: 1.6;
+}
+.api-note strong { color: var(--amber); }
+.api-key-input-wrap { display: flex; gap: 8px; margin-top: 10px; }
+.api-key-input {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 12px; font-size: 12px;
+  font-family: 'DM Mono', monospace; color: var(--text); outline: none;
+}
+.api-key-input:focus { border-color: var(--amber); }
+.api-key-btn {
+  background: var(--amber); color: white; border: none;
+  padding: 7px 14px; border-radius: 8px; font-size: 12px;
+  font-weight: 600; cursor: pointer; white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Form select */
+.form-select { background: var(--surf2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; font-size: 12px; color: var(--text); outline: none; }
+
+/* toast */
+.toast { position: fixed; bottom: 20px; right: 20px; background: var(--green); color: white; padding: 10px 18px; border-radius: 9px; font-size: 12px; font-weight: 500; transform: translateY(70px); opacity: 0; transition: all .3s; z-index: 999; }
+.toast.show { transform: translateY(0); opacity: 1; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar">
+  <div class="s-logo">
+    <div class="s-logo-row">
+      <div class="s-logo-mark">
+        <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white"/><path d="M5 8L7 10L11 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div><div class="s-logo-name">Mon Assurance Scolaire</div><div class="s-logo-sub">Back-office v3</div></div>
+    </div>
+    <div class="s-product">🎒 Mon Assurance Scolaire — RC Scolaire</div>
+  </div>
+
+  <div class="s-section">
+    <div class="s-label">Principal</div>
+    <div class="s-item active" onclick="nav('dashboard',this)">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+      Tableau de bord
+    </div>
+    <div class="s-item" onclick="nav('souscriptions',this)">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Souscriptions <span class="s-badge">24</span>
+    </div>
+  </div>
+
+  <div class="s-section">
+    <div class="s-label">Finance</div>
+    <div class="s-item" onclick="nav('bordereau',this)">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5 5h6M5 8h6M5 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Bordereau commissions
+    </div>
+    <div class="s-item" onclick="nav('fiscalite',this)">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Fiscalité TSCA
+    </div>
+  </div>
+
+  <div class="s-section">
+    <div class="s-label">SEO & Contenu</div>
+    <div class="s-item" onclick="nav('articles',this)">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Blog & Articles SEO
+    </div>
+    <div class="s-item" onclick="nav('pages',this)">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Pages géolocalisées
+    </div>
+  </div>
+
+  <div class="s-section">
+    <div class="s-label">IA</div>
+    <div class="s-item claude-nav active-chat" onclick="toggleChat()">
+      <svg viewBox="0 0 16 16" fill="none" width="15" height="15"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 8.5c.5-2 1.5-3 3-3s2.5 1 2.5 2.5c0 1.5-1 2-2 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="12" r=".7" fill="currentColor"/></svg>
+      Claude AI
+      <div class="claude-pulse"></div>
+    </div>
+  </div>
+
+  <div class="s-bottom">
+    <div class="s-item" style="font-size:11px;">
+      <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M8 7v5M8 5v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Aide & documentation
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN CONTENT ══ -->
+<div class="main">
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="topbar">
+      <div><div class="topbar-title">Tableau de bord — Mon Assurance Scolaire</div><div class="topbar-sub">RC Scolaire · Rentrée 2025-2026 · Mardi 28 avril 2026</div></div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary" onclick="nav('bordereau',null)">📄 Bordereau avril</button>
+        <button class="btn btn-primary" onclick="focusChat('Génère-moi un résumé des performances du mois d\'avril')">🤖 Demander à Claude</button>
+      </div>
+    </div>
+    <div class="content" style="padding:22px 24px;">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Souscriptions ce mois</div><div class="stat-val w">24</div><div class="stat-sub">↑ +8 vs mars 2026</div></div>
+        <div class="stat-card"><div class="stat-label">Primes TTC collectées</div><div class="stat-val w">241,76€</div><div class="stat-sub">Avril 2026</div></div>
+        <div class="stat-card"><div class="stat-label">Commissions à conserver</div><div class="stat-val g">55,45€</div><div class="stat-sub">Taux 25% sur HT</div></div>
+        <div class="stat-card"><div class="stat-label">À reverser assureur</div><div class="stat-val r">166,37€</div><div class="stat-sub">Échéance 30/05/2026</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Dernières souscriptions</div></div>
+          <div class="card-body" style="padding:0;">
+            <table class="t">
+              <thead><tr><th>Client</th><th>Formule</th><th>Prime</th><th>Statut</th></tr></thead>
+              <tbody>
+                <tr><td>M. Dupont P.</td><td>Sérénité</td><td>9,99€</td><td><span class="badge badge-g">Actif</span></td></tr>
+                <tr><td>Mme Martin S.</td><td>Intégrale</td><td>16,99€</td><td><span class="badge badge-g">Actif</span></td></tr>
+                <tr><td>M. Bernard J.</td><td>Essentielle</td><td>6,99€</td><td><span class="badge badge-g">Actif</span></td></tr>
+                <tr><td>Mme Petit M.</td><td>Sérénité</td><td>9,99€</td><td><span class="badge badge-g">Actif</span></td></tr>
+                <tr><td>M. Leroy T.</td><td>Intégrale</td><td>16,99€</td><td><span class="badge badge-g">Actif</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Répartition formules — Avril</div></div>
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span style="color:var(--blue);">Essentielle (6,99€)</span><span style="color:var(--muted);">6 contrats</span></div><div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px;"><div style="width:25%;height:100%;background:var(--blue);border-radius:3px;"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span style="color:var(--green);">Sérénité (9,99€)</span><span style="color:var(--muted);">11 contrats</span></div><div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px;"><div style="width:46%;height:100%;background:var(--green);border-radius:3px;"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span style="color:var(--purple);">Intégrale (16,99€)</span><span style="color:var(--muted);">7 contrats</span></div><div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px;"><div style="width:29%;height:100%;background:var(--purple);border-radius:3px;"></div></div></div>
+              <div style="border-top:1px solid var(--border);padding-top:10px;font-size:11px;color:var(--muted);">Panier moyen : 10,07€ TTC · Taux conv. estimé : 3,2%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Quick actions Claude -->
+      <div class="card" style="margin-top:4px;">
+        <div class="card-header"><div class="card-title">⚡ Actions rapides Claude AI</div><div style="font-size:11px;color:var(--muted);">Cliquez pour envoyer la demande à Claude</div></div>
+        <div class="card-body" style="display:flex;flex-wrap:wrap;gap:8px;">
+          <button class="suggestion-chip" onclick="focusChat('Génère un article SEO sur l\'assurance scolaire maternelle, 800 mots, avec FAQ')">📝 Générer article SEO maternelle</button>
+          <button class="suggestion-chip" onclick="focusChat('Mets à jour la méta-description de la page Paris avec les données DEPP 2025')">🔍 Mettre à jour méta Paris</button>
+          <button class="suggestion-chip" onclick="focusChat('Crée une nouvelle page SEO pour Lyon 3e arrondissement')">📍 Page SEO Lyon 3e</button>
+          <button class="suggestion-chip" onclick="focusChat('Analyse les performances SEO du mois et donne-moi 3 recommandations prioritaires')">📊 Analyse SEO du mois</button>
+          <button class="suggestion-chip" onclick="focusChat('Rédige un email de relance pour les clients dont le contrat expire dans 30 jours')">📧 Email relance contrats</button>
+          <button class="suggestion-chip" onclick="focusChat('Génère le bordereau de commission du mois avec la décomposition TSCA')">💰 Bordereau automatique</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOUSCRIPTIONS -->
+  <div class="page" id="page-souscriptions">
+    <div class="topbar">
+      <div><div class="topbar-title">Souscriptions Mon Assurance Scolaire</div><div class="topbar-sub">Historique des contrats RC Scolaire</div></div>
+      <div class="topbar-actions">
+        <select class="form-select"><option>Toutes les formules</option><option>Essentielle</option><option>Sérénité</option><option>Intégrale</option></select>
+        <button class="btn btn-primary" onclick="focusChat('Analyse mes souscriptions et identifie la formule la plus populaire ce mois')">🤖 Analyser avec Claude</button>
+      </div>
+    </div>
+    <div class="content" style="padding:22px 24px;">
+      <div class="card">
+        <div class="card-body" style="padding:0;overflow-x:auto;">
+          <table class="t">
+            <thead><tr><th>N° contrat</th><th>Date</th><th>Client</th><th>Ville</th><th>Formule</th><th>HT</th><th>TSCA 9%</th><th>TTC</th><th>Statut</th></tr></thead>
+            <tbody id="subs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BORDEREAU -->
+  <div class="page" id="page-bordereau">
+    <div class="topbar">
+      <div><div class="topbar-title">Bordereau de commissions</div><div class="topbar-sub">Mon Assurance Scolaire — Décomposition TSCA 9% incluse</div></div>
+      <div class="topbar-actions">
+        <select class="form-select" id="sel-taux" onchange="renderBordereau()"><option value="25">Commission 25%</option><option value="20">Commission 20%</option><option value="30">Commission 30%</option></select>
+        <button class="btn btn-secondary" onclick="window.print()">🖨 Imprimer</button>
+        <button class="btn btn-primary" onclick="focusChat('Explique-moi comment remplir ma déclaration fiscale avec ce bordereau')">🤖 Aide fiscale Claude</button>
+      </div>
+    </div>
+    <div class="content" style="padding:22px 24px;" id="bordereau-content">
+      <div style="background:linear-gradient(135deg,#0d2240,#1a3a5c);border-radius:12px;padding:22px 26px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;">Mon Assurance Scolaire</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6;">Matclo Assurance · Valbonne (06560) · ORIAS n° 14003416<br>Période : <strong style="color:white;">1er au 30 avril 2026</strong> · Produit : <strong style="color:white;">Mon Assurance Scolaire RC Scolaire</strong></div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:22px;font-weight:700;color:var(--green);">BDC-2026-04</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">Émis le 28/04/2026<br><span style="color:var(--amber);">TSCA 9% — CGI art. 1001</span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);">
+        <span><span style="display:inline-block;width:8px;height:8px;background:var(--blue);border-radius:2px;margin-right:5px;"></span>Prime HT</span>
+        <span><span style="display:inline-block;width:8px;height:8px;background:var(--amber);border-radius:2px;margin-right:5px;"></span>TSCA 9%</span>
+        <span><span style="display:inline-block;width:8px;height:8px;background:var(--green);border-radius:2px;margin-right:5px;"></span>Commission</span>
+        <span><span style="display:inline-block;width:8px;height:8px;background:var(--red);border-radius:2px;margin-right:5px;"></span>À reverser</span>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0;overflow-x:auto;">
+          <table class="t">
+            <thead><tr><th>N° contrat</th><th>Date</th><th>Client</th><th>Ville</th><th>Formule</th><th style="color:var(--blue)">HT</th><th style="color:var(--amber)">TSCA 9%</th><th>TTC</th><th style="color:var(--green)">Commission</th><th style="color:var(--red)">À reverser</th></tr></thead>
+            <tbody id="b-tbody"></tbody>
+            <tfoot><tr>
+              <td colspan="5" style="font-weight:700;color:#fff;padding-top:14px;">TOTAUX</td>
+              <td style="color:var(--blue);font-weight:700;" id="tot-ht">—</td>
+              <td style="color:var(--amber);font-weight:700;" id="tot-tsca">—</td>
+              <td style="color:#fff;font-weight:700;" id="tot-ttc">—</td>
+              <td style="color:var(--green);font-weight:700;" id="tot-comm">—</td>
+              <td style="color:var(--red);font-weight:700;" id="tot-rev">—</td>
+            </tr></tfoot>
+          </table>
+        </div>
+      </div>
+      <div class="totaux">
+        <div class="total-card prime"><div class="total-label">Primes HT</div><div class="total-val" id="tc-ht">—</div></div>
+        <div class="total-card taxe"><div class="total-label">TSCA 9% → État</div><div class="total-val" id="tc-tsca">—</div></div>
+        <div class="total-card comm"><div class="total-label">💰 Commission</div><div class="total-val" id="tc-comm">—</div></div>
+        <div class="total-card rev"><div class="total-label">⬆ À reverser</div><div class="total-val" id="tc-rev">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FISCALITE -->
+  <div class="page" id="page-fiscalite">
+    <div class="topbar">
+      <div><div class="topbar-title">Fiscalité — TSCA</div><div class="topbar-sub">Taxe Spéciale sur les Conventions d'Assurances · CGI art. 1001</div></div>
+      <div class="topbar-actions"><button class="btn btn-primary" onclick="focusChat('Explique-moi la TSCA en assurance scolaire et mes obligations en tant que courtier')">🤖 Expliquer avec Claude</button></div>
+    </div>
+    <div class="content" style="padding:22px 24px;">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Décomposition par formule Mon Assurance Scolaire</div></div>
+        <div class="card-body" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+          ${['Essentielle|6,99|6,41|0,58|1,60|5,39','Sérénité|9,99|9,17|0,83|2,29|7,70','Intégrale|16,99|15,59|1,40|3,90|13,09'].map(f => {
+            const [nom,ttc,ht,tsca,comm,rev] = f.split('|');
+            return `<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;">
+              <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:12px;">${nom}</div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--muted)">Prime TTC client</span><span style="color:#fff;font-weight:600;">${ttc}€</span></div>
+              <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span style="color:var(--muted)">Prime HT (÷ 1,09)</span><span style="color:var(--blue);">${ht}€</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span style="color:var(--muted)">TSCA 9%</span><span style="color:var(--amber);">${tsca}€</span></div>
+              <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span style="color:var(--muted)">Commission 25% HT</span><span style="color:var(--green);">${comm}€</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;"><span style="color:var(--muted)">À reverser</span><span style="color:var(--red);">${rev}€</span></div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARTICLES -->
+  <div class="page" id="page-articles">
+    <div class="topbar">
+      <div><div class="topbar-title">Blog & Articles SEO</div><div class="topbar-sub">Stratégie contenu Mon Assurance Scolaire — Publication géolocalisée</div></div>
+      <div class="topbar-actions"><button class="btn btn-primary" onclick="focusChat('Génère un article SEO complet sur l\'assurance scolaire maternelle, 900 mots, avec FAQ structurée pour les featured snippets Google')">+ Nouvel article avec Claude</button></div>
+    </div>
+    <div class="content" style="padding:22px 24px;">
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table class="t">
+            <thead><tr><th>Titre</th><th>Ville</th><th>Mot-clé</th><th>Date</th><th>Statut</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td>Assurance scolaire Paris 2025 — RC enfant métro couvert</td><td>Paris</td><td>assurance scolaire Paris</td><td>15/04</td><td><span class="badge badge-g">Publié</span></td><td><button class="btn btn-secondary" style="padding:4px 10px;font-size:10px;" onclick="focusChat('Mets à jour l\'article sur Paris avec les dernières données DEPP 2025 et améliore la méta-description')">Améliorer</button></td></tr>
+              <tr><td>RC scolaire Lyon — trajet TCL couvert, attestation immédiate</td><td>Lyon</td><td>assurance scolaire Lyon</td><td>14/04</td><td><span class="badge badge-g">Publié</span></td><td><button class="btn btn-secondary" style="padding:4px 10px;font-size:10px;" onclick="focusChat('Crée 3 nouvelles questions FAQ pour l\'article sur Lyon, axées sur la gratuité TCL pour les 4-10 ans')">+ FAQ</button></td></tr>
+              <tr><td>Assurance scolaire Marseille — enfants REP et RTM</td><td>Marseille</td><td>assurance scolaire Marseille</td><td>13/04</td><td><span class="badge badge-a">Brouillon</span></td><td><button class="btn btn-primary" style="padding:4px 10px;font-size:10px;" onclick="focusChat('Finalise et optimise l\'article brouillon sur Marseille pour le SEO, vérifie l\'E-E-A-T et ajoute les sources officielles')">Finaliser</button></td></tr>
+              <tr><td>Assurance scolaire sans franchise — guide complet 2025</td><td>National</td><td>assurance scolaire sans franchise</td><td>10/04</td><td><span class="badge badge-g">Publié</span></td><td><button class="btn btn-secondary" style="padding:4px 10px;font-size:10px;" onclick="focusChat('Analyse le score SEO de cet article et propose 5 améliorations concrètes')">Analyser</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGES GEO -->
+  <div class="page" id="page-pages">
+    <div class="topbar">
+      <div><div class="topbar-title">Pages SEO géolocalisées</div><div class="topbar-sub">Maillage local Mon Assurance Scolaire — Piliers 1, 2 et 3</div></div>
+      <div class="topbar-actions"><button class="btn btn-primary" onclick="focusChat('Génère une page SEO complète pour l\'assurance scolaire à Cannes, avec les données locales, FAQ, et Schema.org JSON-LD')">+ Créer page avec Claude</button></div>
+    </div>
+    <div class="content" style="padding:22px 24px;">
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat-card"><div class="stat-label">Pages en ligne</div><div class="stat-val g">10</div><div class="stat-sub">Paris, Lyon, Marseille...</div></div>
+        <div class="stat-card"><div class="stat-label">Pages à créer (Pilier 1)</div><div class="stat-val a">6</div><div class="stat-sub">Intention d'achat prioritaire</div></div>
+        <div class="stat-card"><div class="stat-label">Articles blog</div><div class="stat-val w">4</div><div class="stat-sub">Objectif : 1/jour</div></div>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table class="t">
+            <thead><tr><th>URL</th><th>Type</th><th>Statut</th><th>Action Claude</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--blue)">mon-assurance-scolaire.fr/assurance-scolaire-pas-chere/</td><td><span class="badge badge-g">Pilier 1</span></td><td><span class="badge badge-a">À créer</span></td><td><button class="btn btn-primary" style="padding:4px 10px;font-size:10px;" onclick="focusChat('Génère la page complète HTML SEO pour /assurance-scolaire-pas-chere/ avec Schema.org FAQPage, ciblant 5000-10000 recherches/mois')">Générer</button></td></tr>
+              <tr><td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--blue)">mon-assurance-scolaire.fr/assurance-scolaire-attestation-immediate/</td><td><span class="badge badge-g">Pilier 1</span></td><td><span class="badge badge-a">À créer</span></td><td><button class="btn btn-primary" style="padding:4px 10px;font-size:10px;" onclick="focusChat('Génère la page /assurance-scolaire-attestation-immediate/ optimisée pour les featured snippets Google')">Générer</button></td></tr>
+              <tr><td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--blue)">mon-assurance-scolaire.fr/assurance-scolaire/paris/</td><td><span class="badge" style="background:rgba(192,132,252,0.12);color:var(--purple)">Pilier 3</span></td><td><span class="badge badge-g">En ligne</span></td><td><button class="btn btn-secondary" style="padding:4px 10px;font-size:10px;" onclick="focusChat('Améliore la page Paris avec des données plus récentes et optimise pour les arrondissements en longue traîne')">Améliorer</button></td></tr>
+              <tr><td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--blue)">mon-assurance-scolaire.fr/assurance-scolaire/paris/16e/</td><td><span class="badge" style="background:rgba(192,132,252,0.12);color:var(--purple)">Longue traîne</span></td><td><span class="badge badge-a">À créer</span></td><td><button class="btn btn-primary" style="padding:4px 10px;font-size:10px;" onclick="focusChat('Génère une page SEO pour l\'assurance scolaire Paris 16e arrondissement avec les écoles du quartier')">Générer</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ══ CHAT CLAUDE AI ══ -->
+<div class="chat-panel" id="chat-panel">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="chat-header-icon">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="7" fill="white" fill-opacity="0.15"/>
+        <path d="M6 9.5c.6-2.5 1.8-3.5 3-3.5s2.5 1.2 2.5 3c0 1.8-1.2 2.5-2 3" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
+        <circle cx="9" cy="13.5" r=".8" fill="white"/>
+      </svg>
+    </div>
+    <div class="chat-header-text">
+      <div class="chat-header-title">Claude AI — Assistant Mon Assurance Scolaire</div>
+      <div class="chat-status"><div class="chat-status-dot"></div>Connecté · claude-sonnet-4-6</div>
+    </div>
+    <button class="chat-collapse-btn" onclick="toggleChat()" title="Réduire">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M9 3L3 9M3 3l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <!-- Contexte -->
+  <div class="chat-context-bar" id="chat-context">
+    <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><circle cx="5.5" cy="5.5" r="4.5" stroke="currentColor" stroke-width="1.1"/><path d="M5.5 4v3M5.5 3v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Contexte : <span class="chat-context-label" id="ctx-label">Tableau de bord</span>
+    <span style="margin-left:auto;font-style:italic;">Mon Assurance Scolaire · Mon Assurance Scolaire · RC Scolaire</span>
+  </div>
+
+  <!-- Zone API key (affichée si pas encore configurée) -->
+  <div id="api-setup" style="padding:12px 14px;border-bottom:1px solid var(--border);">
+    <div class="api-note">
+      <strong>🔑 Configuration Claude API</strong><br>
+      Pour activer le chat en direct, entrez votre clé API Anthropic ci-dessous. Elle sera stockée uniquement dans cette session.<br>
+      <div class="api-key-input-wrap">
+        <input type="password" class="api-key-input" id="api-key-input" placeholder="sk-ant-api03-...">
+        <button class="api-key-btn" onclick="saveApiKey()">Activer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-messages" id="chat-messages">
+    <!-- Message de bienvenue -->
+    <div class="chat-msg assistant">
+      <div class="chat-msg-bubble">
+        <div class="action-tag">🎒 Mon Assurance Scolaire · Mon Assurance Scolaire</div>
+        <strong style="color:#fff;">Bonjour ! Je suis Claude, votre assistant IA intégré au back-office Mon Assurance Scolaire.</strong><br><br>
+        Je peux vous aider à :<br>
+        • <strong>Générer du contenu SEO</strong> — articles, pages géolocalisées, FAQ<br>
+        • <strong>Modifier le site</strong> — méta-données, textes, nouvelles sections<br>
+        • <strong>Analyser les performances</strong> — SEO, souscriptions, commissions<br>
+        • <strong>Rédiger des emails</strong> — relances, confirmations, sinistres<br>
+        • <strong>Répondre à toutes vos questions</strong> sur la fiscalité, le SEO, la réglementation<br><br>
+        Que souhaitez-vous faire aujourd'hui ?
+      </div>
+      <div class="chat-msg-time">Maintenant · claude-sonnet-4-6</div>
+    </div>
+  </div>
+
+  <!-- Suggestions -->
+  <div class="chat-suggestions" id="chat-suggestions">
+    <div class="suggestion-chip" onclick="sendSuggestion(this)">📝 Générer un article SEO</div>
+    <div class="suggestion-chip" onclick="sendSuggestion(this)">📍 Nouvelle page géolocalisée</div>
+    <div class="suggestion-chip" onclick="sendSuggestion(this)">💰 Analyser le bordereau</div>
+    <div class="suggestion-chip" onclick="sendSuggestion(this)">🔍 Audit SEO du site</div>
+    <div class="suggestion-chip" onclick="sendSuggestion(this)">📧 Rédiger un email client</div>
+  </div>
+
+  <!-- Panneau réduit -->
+  <div class="chat-expand-hint" onclick="toggleChat()">
+    <div style="width:36px;height:36px;background:linear-gradient(135deg,#D97706,#F59E0B);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" fill="white" fill-opacity=".15"/><path d="M6 9.5c.6-2.5 1.8-3.5 3-3.5s2.5 1.2 2.5 3c0 1.8-1.2 2.5-2 3" stroke="white" stroke-width="1.4" stroke-linecap="round"/><circle cx="9" cy="13.5" r=".8" fill="white"/></svg>
+    </div>
+    <div style="writing-mode:vertical-rl;font-size:11px;color:var(--amber);font-weight:600;letter-spacing:.5px;">Claude AI</div>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input-zone">
+    <div class="chat-input-row">
+      <textarea
+        class="chat-input"
+        id="chat-input"
+        placeholder="Demandez à Claude de modifier le site, générer du contenu, analyser les données..."
+        rows="1"
+        onkeydown="handleKey(event)"
+        oninput="autoResize(this)"
+      ></textarea>
+      <button class="chat-send-btn" id="send-btn" onclick="sendMessage()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M10 4l4 4-4 4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <div style="font-size:10px;color:var(--muted);margin-top:7px;text-align:center;">
+      Claude a accès au contexte Mon Assurance Scolaire · Mon Assurance Scolaire · YMYL · SEO
+    </div>
+  </div>
+
+</div><!-- /chat-panel -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════
+// DONNÉES
+// ══════════════════════════════════════
+const SUBS = [
+  { id:'ZK-2026-00241', date:'02/04', client:'M. Dupont Pierre', ville:'Paris 15e', formule:'Sérénité', ttc:9.99 },
+  { id:'ZK-2026-00242', date:'03/04', client:'Mme Martin Sophie', ville:'Lyon 3e', formule:'Intégrale', ttc:16.99 },
+  { id:'ZK-2026-00243', date:'05/04', client:'M. Bernard Jean', ville:'Marseille', formule:'Essentielle', ttc:6.99 },
+  { id:'ZK-2026-00244', date:'07/04', client:'Mme Petit Marie', ville:'Nice', formule:'Sérénité', ttc:9.99 },
+  { id:'ZK-2026-00245', date:'08/04', client:'M. Leroy Thomas', ville:'Toulouse', formule:'Intégrale', ttc:16.99 },
+  { id:'ZK-2026-00246', date:'10/04', client:'Mme Moreau Julie', ville:'Bordeaux', formule:'Sérénité', ttc:9.99 },
+  { id:'ZK-2026-00247', date:'11/04', client:'M. Simon Paul', ville:'Nantes', formule:'Essentielle', ttc:6.99 },
+  { id:'ZK-2026-00248', date:'12/04', client:'Mme Laurent Anne', ville:'Strasbourg', formule:'Intégrale', ttc:16.99 },
+  { id:'ZK-2026-00249', date:'14/04', client:'M. Dubois Marc', ville:'Lille', formule:'Sérénité', ttc:9.99 },
+  { id:'ZK-2026-00250', date:'15/04', client:'Mme Robert Claire', ville:'Valbonne', formule:'Intégrale', ttc:16.99 },
+];
+
+const TSCA = 0.09;
+const fmt = n => n.toFixed(2).replace('.', ',') + '€';
+
+function calcRow(ttc, taux) {
+  const ht = ttc / (1 + TSCA);
+  return { ht, tsca: ht * TSCA, ttc, comm: ht * taux / 100, rev: ttc - ht * taux / 100 };
+}
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+const PAGE_LABELS = {
+  dashboard: 'Tableau de bord', souscriptions: 'Souscriptions',
+  bordereau: 'Bordereau commissions', fiscalite: 'Fiscalité TSCA',
+  articles: 'Blog & Articles SEO', pages: 'Pages géolocalisées'
+};
+
+function nav(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.s-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+
+  // Mettre à jour le contexte du chat
+  document.getElementById('ctx-label').textContent = PAGE_LABELS[id] || id;
+
+  if (id === 'souscriptions') renderSubs();
+  if (id === 'bordereau') renderBordereau();
+}
+
+// ══════════════════════════════════════
+// TABLEAU SOUSCRIPTIONS
+// ══════════════════════════════════════
+function renderSubs() {
+  const tbody = document.getElementById('subs-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = SUBS.map(s => {
+    const r = calcRow(s.ttc, 25);
+    return `<tr>
+      <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${s.id}</td>
+      <td>${s.date}</td><td>${s.client}</td><td>${s.ville}</td>
+      <td><span class="badge badge-g">${s.formule}</span></td>
+      <td style="color:var(--blue)">${fmt(r.ht)}</td>
+      <td style="color:var(--amber)">${fmt(r.tsca)}</td>
+      <td>${fmt(r.ttc)}</td>
+      <td><span class="badge badge-g">Actif</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// BORDEREAU
+// ══════════════════════════════════════
+function renderBordereau() {
+  const taux = parseInt(document.getElementById('sel-taux')?.value || 25);
+  let totHT=0, totTSCA=0, totTTC=0, totComm=0, totRev=0;
+
+  const tbody = document.getElementById('b-tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = SUBS.map(s => {
+    const r = calcRow(s.ttc, taux);
+    totHT+=r.ht; totTSCA+=r.tsca; totTTC+=r.ttc; totComm+=r.comm; totRev+=r.rev;
+    return `<tr>
+      <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${s.id}</td>
+      <td>${s.date}</td><td>${s.client}</td><td>${s.ville}</td>
+      <td><span class="badge badge-g">${s.formule}</span></td>
+      <td style="color:var(--blue)">${fmt(r.ht)}</td>
+      <td style="color:var(--amber)">${fmt(r.tsca)}</td>
+      <td>${fmt(r.ttc)}</td>
+      <td style="color:var(--green)">${fmt(r.comm)}</td>
+      <td style="color:var(--red)">${fmt(r.rev)}</td>
+    </tr>`;
+  }).join('');
+
+  ['ht','tsca','ttc','comm','rev'].forEach((k,i) => {
+    const v = [totHT,totTSCA,totTTC,totComm,totRev][i];
+    const el = document.getElementById('tot-'+k);
+    if (el) el.textContent = fmt(v);
+    const el2 = document.getElementById('tc-'+k);
+    if (el2) el2.textContent = fmt(v);
+  });
+}
+
+// ══════════════════════════════════════
+// CHAT — ÉTAT
+// ══════════════════════════════════════
+let apiKey = '';
+let isStreaming = false;
+let conversationHistory = [];
+
+const SYSTEM_PROMPT = `Tu es l'assistant IA intégré au back-office d'Mon Assurance Scolaire, une plateforme de courtage en assurance scolaire (produit Mon Assurance Scolaire) basée à Valbonne (06560), enregistrée à l'ORIAS.
+
+CONTEXTE PRODUIT :
+- Mon Assurance Scolaire : assurance RC scolaire, 3 formules (Essentielle 6,99€, Sérénité 9,99€, Intégrale 16,99€/an)
+- TSCA 9% (taux de droit commun, CGI art. 1001) — pas de TVA en assurance
+- Commission courtier : 25% sur prime HT (paramétrable 20/25/30%)
+- Paiement CB via PayZen (Lyra) — courtier ORIAS, contrôle ACPR
+- Site mon-assurance-scolaire.fr — SEO YMYL (E-E-A-T requis)
+
+EXPERTISE SEO :
+- Stratégie 3 piliers : Pilier 1 (intention achat), Pilier 2 (saisonnier/info), Pilier 3 (géo)
+- Schema.org : FAQPage, LocalBusiness, InsuranceAgency, Service
+- Mots-clés prioritaires : "assurance scolaire pas chère", "attestation immédiate", "en ligne 3 minutes"
+- Saisonnalité : pic août-septembre (60-70% des recherches annuelles)
+- E-E-A-T : auteur ORIAS identifié, sources officielles (DEPP, education.gouv.fr)
+- GEO : autoriser GPTBot, ClaudeBot, PerplexityBot
+
+TES CAPACITÉS :
+1. Générer des articles SEO complets (800-1200 mots, Schema.org FAQPage inclus)
+2. Créer des pages HTML géolocalisées avec données DEPP officielles
+3. Analyser et améliorer le SEO du site
+4. Générer le contenu du bordereau de commissions
+5. Répondre sur la fiscalité assurance (TSCA, pas de TVA)
+6. Rédiger des emails clients (confirmation, relance, sinistre)
+7. Analyser les performances et faire des recommandations
+
+RÈGLES IMPORTANTES :
+- Tu es sur un site YMYL (assurance) : toujours citer les sources officielles
+- Ne jamais inventer de statistiques — utiliser les données DEPP et Ministère de l'Éducation
+- Contenu en français, ton professionnel mais accessible
+- Toujours mentionner ORIAS, ACPR, IPID quand c'est pertinent pour la conformité DDA
+
+Réponds de façon concise et actionnable. Quand tu génères du code HTML/JSON, le mettre dans des blocs de code.`;
+
+// ══════════════════════════════════════
+// CHAT — FONCTIONS
+// ══════════════════════════════════════
+function saveApiKey() {
+  const input = document.getElementById('api-key-input');
+  if (!input.value.trim().startsWith('sk-ant-')) {
+    showToast('⚠️ Clé API invalide — doit commencer par sk-ant-');
+    return;
+  }
+  apiKey = input.value.trim();
+  document.getElementById('api-setup').style.display = 'none';
+  showToast('✅ Claude AI activé !');
+  addMessage('assistant', '🔑 **Clé API configurée !** Je suis maintenant pleinement opérationnel. Posez-moi n\'importe quelle question ou demandez-moi de modifier votre site Mon Assurance Scolaire.');
+}
+
+function toggleChat() {
+  const panel = document.getElementById('chat-panel');
+  panel.classList.toggle('collapsed');
+}
+
+function focusChat(text) {
+  const panel = document.getElementById('chat-panel');
+  panel.classList.remove('collapsed');
+  const input = document.getElementById('chat-input');
+  input.value = text;
+  autoResize(input);
+  input.focus();
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function sendSuggestion(el) {
+  focusChat(el.textContent.trim().replace(/^[^\s]+ /, ''));
+}
+
+function now() {
+  return new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+}
+
+function addMessage(role, content, isAction = false) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `chat-msg ${role}`;
+
+  const bubble = document.createElement('div');
+  bubble.className = `chat-msg-bubble${isAction ? ' action' : ''}`;
+
+  // Formater le markdown basique
+  bubble.innerHTML = formatMsg(content);
+
+  const time = document.createElement('div');
+  time.className = 'chat-msg-time';
+  time.textContent = now() + (role === 'assistant' ? ' · claude-sonnet-4-6' : ' · Vous');
+
+  div.appendChild(bubble);
+  div.appendChild(time);
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return bubble;
+}
+
+function formatMsg(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#fff">$1</strong>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\n/g, '<br>')
+    .replace(/^• /gm, '&nbsp;• ');
+}
+
+function showTyping() {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg assistant';
+  div.id = 'typing-indicator';
+  div.innerHTML = `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideTyping() {
+  const t = document.getElementById('typing-indicator');
+  if (t) t.remove();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || isStreaming) return;
+
+  // Vider input
+  input.value = '';
+  autoResize(input);
+
+  // Ajouter message utilisateur
+  addMessage('user', text);
+
+  // Masquer suggestions
+  document.getElementById('chat-suggestions').style.display = 'none';
+
+  // Contexte actuel
+  const ctx = document.getElementById('ctx-label').textContent;
+
+  // Ajouter au historique
+  conversationHistory.push({ role: 'user', content: `[Contexte: ${ctx}]\n${text}` });
+
+  // Vérifier clé API
+  if (!apiKey) {
+    addMessage('assistant', '⚠️ **Clé API requise**\n\nPour utiliser le chat en temps réel, configurez votre clé API Anthropic dans le champ ci-dessus.\n\nVous pouvez obtenir votre clé sur **console.anthropic.com**.');
+    conversationHistory.pop();
+    return;
+  }
+
+  isStreaming = true;
+  document.getElementById('send-btn').disabled = true;
+  showTyping();
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1500,
+        system: SYSTEM_PROMPT,
+        messages: conversationHistory,
+      })
+    });
+
+    hideTyping();
+
+    if (!response.ok) {
+      const err = await response.json();
+      addMessage('assistant', `⚠️ **Erreur API** (${response.status})\n${err.error?.message || 'Vérifiez votre clé API et réessayez.'}`);
+      conversationHistory.pop();
+    } else {
+      const data = await response.json();
+      const reply = data.content?.[0]?.text || 'Réponse vide.';
+
+      // Détecter si c'est une action sur le site
+      const isAction = /génère|crée|modifie|mets à jour|bordereau|page HTML|article/i.test(text);
+      addMessage('assistant', reply, isAction);
+
+      // Ajouter réponse à l'historique
+      conversationHistory.push({ role: 'assistant', content: reply });
+
+      // Garder l'historique raisonnable (10 derniers échanges)
+      if (conversationHistory.length > 20) {
+        conversationHistory = conversationHistory.slice(-20);
+      }
+
+      // Toast si action détectée
+      if (isAction) showToast('✅ Claude a traité votre demande');
+    }
+  } catch (err) {
+    hideTyping();
+    if (err.message.includes('Failed to fetch') || err.message.includes('CORS')) {
+      addMessage('assistant',
+        '**Mode démonstration** — En production, le chat Claude est pleinement opérationnel via votre serveur backend.\n\n' +
+        'Voici ce que je ferais pour votre demande :\n\n' +
+        getMockResponse(text)
+      );
+    } else {
+      addMessage('assistant', `⚠️ Erreur : ${err.message}`);
+    }
+    conversationHistory.pop();
+  }
+
+  isStreaming = false;
+  document.getElementById('send-btn').disabled = false;
+}
+
+// Réponses de démo quand l'API n'est pas disponible (CORS en local)
+function getMockResponse(text) {
+  const t = text.toLowerCase();
+  if (t.includes('article') || t.includes('seo')) {
+    return '📝 **Article SEO généré** pour la requête ciblée.\n\nStructure : H1 optimisé → Introduction (60 mots, réponse directe) → 4 sections H2 → FAQ Schema.org (5 questions) → CTA vers souscription.\n\nMéta-title : 62 caractères · Méta-description : 155 caractères · Score E-E-A-T : ✅ Sources DEPP citées, auteur ORIAS signataire.';
+  }
+  if (t.includes('bordereau') || t.includes('commission')) {
+    return '💰 **Bordereau avril 2026 calculé**\n\nTotal primes TTC : 241,76€\nTSCA 9% : 19,94€ (reversée par l\'assureur)\nCommissions à conserver : 55,45€ (25% HT)\n**À reverser assureur : 166,37€**\n\nÉchéance : 30 mai 2026 · Réf : BDC-2026-04';
+  }
+  if (t.includes('page') || t.includes('géoloca')) {
+    return '📍 **Page SEO générée**\n\nURL : mon-assurance-scolaire.fr/assurance-scolaire/[ville]/\nSchema.org : LocalBusiness + FAQPage + Service\nDonnées DEPP intégrées · Transportés locaux nommés\nScore SEO estimé : 87/100\n\nLa page est prête à être intégrée dans votre CMS.';
+  }
+  if (t.includes('email')) {
+    return '📧 **Email rédigé**\n\nObjet : Votre contrat Mon Assurance Scolaire expire bientôt — Renouvellement en 1 clic\n\nBonjour [Prénom],\n\nVotre assurance scolaire Mon Assurance Scolaire pour [Prénom enfant] arrive à échéance le [date]. Renouvelez en 2 minutes pour rester couvert sans interruption...\n\n*[Suite disponible en production avec Claude API]*';
+  }
+  return '✅ **Demande traitée**\n\nEn environnement de production (serveur backend), Claude répond directement à votre demande et peut modifier le site en temps réel.';
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Init bordereau au démarrage
+window.addEventListener('DOMContentLoaded', () => {
+  renderBordereau();
+});
+</script>
+
+</body>
+</html>

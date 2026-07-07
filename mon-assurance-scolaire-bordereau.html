@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Assurance Scolaire — Back-office</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, sans-serif; background: #0f1623; color: #e2e8f0; min-height: 100vh; }
+
+.shell { display: flex; min-height: 100vh; }
+.sidebar { width: 220px; background: #0B1220; border-right: 1px solid rgba(255,255,255,0.06); padding: 0; display: flex; flex-direction: column; flex-shrink: 0; position: fixed; height: 100vh; }
+.main { margin-left: 220px; flex: 1; }
+
+.sidebar-logo { padding: 22px 18px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.logo-wrap { display: flex; align-items: center; gap: 10px; }
+.logo-mark { width: 30px; height: 30px; border-radius: 8px; background: #1D9E75; display: flex; align-items: center; justify-content: center; }
+.logo-name { font-size: 15px; font-weight: 600; color: #fff; }
+.logo-sub { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 1px; }
+.logo-product { margin-top: 10px; font-size: 11px; background: rgba(29,158,117,0.15); color: #1D9E75; padding: 4px 10px; border-radius: 6px; display: inline-block; }
+
+.nav-section { padding: 14px 10px 6px; }
+.nav-label { font-size: 10px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px; padding: 0 8px; margin-bottom: 5px; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px; font-size: 13px; color: rgba(255,255,255,0.5); cursor: pointer; margin-bottom: 2px; }
+.nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.nav-item.active { background: rgba(29,158,117,0.15); color: #1D9E75; }
+.nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+.topbar { background: #0B1220; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; }
+.topbar-title { font-size: 17px; font-weight: 500; color: #fff; }
+.topbar-sub { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+.btn { padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; }
+.btn-primary { background: #1D9E75; color: white; }
+.btn-secondary { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); }
+.btn-sm { padding: 6px 12px; font-size: 11px; }
+
+.page { display: none; padding: 24px 28px; }
+.page.active { display: block; }
+
+/* Stats */
+.stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 22px; }
+.stat-card { background: #151f2e; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 16px; }
+.stat-label { font-size: 11px; color: rgba(255,255,255,0.35); margin-bottom: 6px; line-height: 1.4; }
+.stat-val { font-size: 20px; font-weight: 600; }
+.stat-val.green { color: #1D9E75; }
+.stat-val.red { color: #f87171; }
+.stat-val.white { color: #fff; }
+.stat-val.amber { color: #fbbf24; }
+.stat-sub { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 3px; }
+
+/* Card */
+.card { background: #151f2e; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; margin-bottom: 18px; }
+.card-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 14px; font-weight: 500; color: #fff; }
+.card-body { padding: 20px; }
+
+/* Bordereau */
+.b-header { background: linear-gradient(135deg, #0d2240, #1a3a5c); border-radius: 12px; padding: 24px 28px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start; }
+.b-logo { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
+.b-company { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; line-height: 1.6; }
+.b-ref-num { font-size: 24px; font-weight: 700; color: #1D9E75; }
+.b-ref-info { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 4px; line-height: 1.6; text-align: right; }
+
+/* Tableau principal */
+.b-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.b-table th { background: #0d1929; color: rgba(255,255,255,0.4); padding: 9px 12px; text-align: left; font-weight: 500; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.b-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); vertical-align: middle; }
+.b-table tr:last-child td { border-bottom: none; }
+.b-table tr:hover td { background: rgba(255,255,255,0.02); }
+.b-table tfoot td { border-top: 2px solid rgba(255,255,255,0.1); font-weight: 600; color: #fff; padding-top: 14px; }
+
+/* Colonnes colorées */
+.col-prime { color: rgba(255,255,255,0.85) !important; }
+.col-hors-taxe { color: #93c5fd !important; }
+.col-tsca { color: #fbbf24 !important; }
+.col-commission { color: #4ade80 !important; }
+.col-reverser { color: #f87171 !important; }
+
+/* Tableau récapitulatif taxes */
+.taxes-box { background: #0d1929; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 18px; margin-bottom: 18px; }
+.taxes-title { font-size: 12px; font-weight: 500; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.taxes-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; }
+.taxes-row span:first-child { color: rgba(255,255,255,0.45); }
+.taxes-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 10px 0; }
+.taxes-total { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; }
+
+/* Totaux finaux */
+.totaux-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+.total-card { border-radius: 10px; padding: 16px 18px; border: 1px solid; }
+.total-card.prime { background: rgba(147,197,253,0.06); border-color: rgba(147,197,253,0.2); }
+.total-card.taxe { background: rgba(251,191,36,0.06); border-color: rgba(251,191,36,0.2); }
+.total-card.commission { background: rgba(74,222,128,0.06); border-color: rgba(74,222,128,0.2); }
+.total-card.reverser { background: rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.2); }
+.total-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; opacity: 0.6; }
+.total-val { font-size: 22px; font-weight: 700; }
+.total-card.prime .total-label, .total-card.prime .total-val { color: #93c5fd; }
+.total-card.taxe .total-label, .total-card.taxe .total-val { color: #fbbf24; }
+.total-card.commission .total-label, .total-card.commission .total-val { color: #4ade80; }
+.total-card.reverser .total-label, .total-card.reverser .total-val { color: #f87171; }
+.total-detail { font-size: 10px; margin-top: 5px; opacity: 0.45; }
+
+/* Légende */
+.legende { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 14px; }
+.leg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(255,255,255,0.45); }
+.leg-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+/* Note fiscale */
+.note-fiscale { background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.2); border-radius: 10px; padding: 14px 18px; margin-bottom: 18px; }
+.note-fiscale-title { font-size: 12px; font-weight: 500; color: #fbbf24; margin-bottom: 8px; }
+.note-fiscale p { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.7; }
+
+/* Instructions reversement */
+.reversement-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.rev-card { background: #0d1929; border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 16px; }
+.rev-card-title { font-size: 10px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.rev-card p { font-size: 12px; color: rgba(255,255,255,0.65); line-height: 1.8; }
+
+/* Form select */
+.form-select { background: #151f2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 7px 12px; font-size: 12px; color: #e2e8f0; outline: none; }
+
+/* Souscriptions */
+.sub-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.sub-table th { background: #0d1929; color: rgba(255,255,255,0.4); padding: 9px 12px; text-align: left; font-weight: 500; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+.sub-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
+.badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+.badge-active { background: rgba(29,158,117,0.15); color: #1D9E75; }
+.badge-pending { background: rgba(251,191,36,0.15); color: #fbbf24; }
+
+/* Formule badges */
+.f-essentielle { background: rgba(147,197,253,0.1); color: #93c5fd; }
+.f-serenite { background: rgba(29,158,117,0.1); color: #1D9E75; }
+.f-integrale { background: rgba(168,85,247,0.1); color: #c084fc; }
+
+/* Toast */
+.toast { position: fixed; bottom: 20px; right: 20px; background: #1D9E75; color: white; padding: 10px 18px; border-radius: 8px; font-size: 12px; font-weight: 500; transform: translateY(80px); opacity: 0; transition: all 0.3s; z-index: 999; }
+.toast.show { transform: translateY(0); opacity: 1; }
+
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { margin-left: 0; }
+  .page { display: block !important; padding: 0; }
+  body { background: white; color: black; }
+  .b-table td, .b-table th { color: #333; }
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-wrap">
+        <div class="logo-mark">
+          <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white"/><path d="M5 8L7 10L11 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div class="logo-name">Mon Assurance Scolaire</div>
+          <div class="logo-sub">Back-office</div>
+        </div>
+      </div>
+      <div class="logo-product">🎒 Mon Assurance Scolaire — RC Scolaire</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Principal</div>
+      <div class="nav-item active" onclick="showPage('dashboard', this)">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+        Tableau de bord
+      </div>
+      <div class="nav-item" onclick="showPage('souscriptions', this)">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Souscriptions Mon Assurance Scolaire
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Finance</div>
+      <div class="nav-item" onclick="showPage('bordereau', this)">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5 5h6M5 8h6M5 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Bordereau commissions
+      </div>
+      <div class="nav-item" onclick="showPage('fiscalite', this)">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Fiscalité (TSCA)
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Contenu & SEO</div>
+      <div class="nav-item" onclick="showPage('articles', this)">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Blog & articles SEO
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div class="page active" id="page-dashboard">
+      <div class="topbar">
+        <div><div class="topbar-title">Tableau de bord — Mon Assurance Scolaire</div><div class="topbar-sub">Assurance scolaire RC enfant · Rentrée 2025-2026</div></div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary" onclick="showPage('bordereau', null)">📄 Bordereau avril 2026</button>
+        </div>
+      </div>
+      <div style="padding: 24px 28px;">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Souscriptions ce mois</div>
+            <div class="stat-val white">24</div>
+            <div class="stat-sub">↑ +8 vs mars 2026</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Primes TTC collectées</div>
+            <div class="stat-val white">241,76€</div>
+            <div class="stat-sub">Avril 2026</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">TSCA collectée (9%)</div>
+            <div class="stat-val amber">19,94€</div>
+            <div class="stat-sub">À reverser via assureur</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Commissions à conserver</div>
+            <div class="stat-val green">55,45€</div>
+            <div class="stat-sub">Taux moyen 25% HT</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Primes nettes à reverser</div>
+            <div class="stat-val red">166,37€</div>
+            <div class="stat-sub">Échéance 30/05/2026</div>
+          </div>
+        </div>
+
+        <div class="note-fiscale">
+          <div class="note-fiscale-title">⚡ Rappel fiscal — Taxe sur les Conventions d'Assurance (TSCA)</div>
+          <p>En assurance, il n'y a <strong style="color:#fff;">pas de TVA</strong>. La taxe applicable est la <strong style="color:#fff;">TSCA (Taxe Spéciale sur les Conventions d'Assurances)</strong>, prélevée sur les primes. Pour la RC scolaire / garantie individuelle accident (taux de droit commun), le taux est de <strong style="color:#fbbf24;">9%</strong> de la prime hors taxe. Cette taxe est <strong style="color:#fff;">collectée par l'assureur</strong> et reversée au Trésor Public — tu n'as pas à la gérer directement, mais elle apparaît dans la décomposition de chaque prime.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Dernières souscriptions Mon Assurance Scolaire</div></div>
+            <div class="card-body">
+              <table class="sub-table">
+                <thead><tr><th>Client</th><th>Formule</th><th>Prime TTC</th><th>Date</th></tr></thead>
+                <tbody>
+                  <tr><td>M. Dupont P.</td><td><span class="badge f-serenite">Sérénité</span></td><td>9,99€</td><td>15/04</td></tr>
+                  <tr><td>Mme Martin S.</td><td><span class="badge f-integrale">Intégrale</span></td><td>16,99€</td><td>14/04</td></tr>
+                  <tr><td>M. Bernard J.</td><td><span class="badge f-essentielle">Essentielle</span></td><td>6,99€</td><td>14/04</td></tr>
+                  <tr><td>Mme Petit M.</td><td><span class="badge f-serenite">Sérénité</span></td><td>9,99€</td><td>13/04</td></tr>
+                  <tr><td>M. Leroy T.</td><td><span class="badge f-integrale">Intégrale</span></td><td>16,99€</td><td>12/04</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><div class="card-title">Répartition par formule — Avril 2026</div></div>
+            <div class="card-body">
+              <div style="display:flex; flex-direction:column; gap:12px; padding-top:4px;">
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
+                    <span style="color:#93c5fd;">Essentielle (6,99€)</span><span style="color:rgba(255,255,255,0.6);">6 souscriptions</span>
+                  </div>
+                  <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px;"><div style="height:100%; width:25%; background:#93c5fd; border-radius:3px;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
+                    <span style="color:#1D9E75;">Sérénité (9,99€)</span><span style="color:rgba(255,255,255,0.6);">11 souscriptions</span>
+                  </div>
+                  <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px;"><div style="height:100%; width:46%; background:#1D9E75; border-radius:3px;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
+                    <span style="color:#c084fc;">Intégrale (16,99€)</span><span style="color:rgba(255,255,255,0.6);">7 souscriptions</span>
+                  </div>
+                  <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px;"><div style="height:100%; width:29%; background:#c084fc; border-radius:3px;"></div></div>
+                </div>
+                <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:12px; font-size:12px; color:rgba(255,255,255,0.4);">
+                  Total : 24 contrats · Panier moyen : 10,07€ TTC
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ BORDEREAU ═══ -->
+    <div class="page" id="page-bordereau">
+      <div class="topbar">
+        <div><div class="topbar-title">Bordereau de commissions mensuel</div><div class="topbar-sub">Mon Assurance Scolaire — RC Scolaire · Avec décomposition TSCA</div></div>
+        <div class="topbar-actions">
+          <select class="form-select" id="sel-mois" onchange="updateBordereau()">
+            <option value="04-2026">Avril 2026</option>
+            <option value="03-2026">Mars 2026</option>
+            <option value="02-2026">Février 2026</option>
+          </select>
+          <select class="form-select" id="sel-taux" onchange="updateBordereau()">
+            <option value="25">Commission 25%</option>
+            <option value="20">Commission 20%</option>
+            <option value="30">Commission 30%</option>
+          </select>
+          <button class="btn btn-secondary" onclick="window.print()">🖨 Imprimer</button>
+          <button class="btn btn-primary" onclick="showToast('📄 Export PDF généré !')">⬇ Export PDF</button>
+        </div>
+      </div>
+
+      <div style="padding: 24px 28px;" id="bordereau-content">
+
+        <!-- En-tête bordereau -->
+        <div class="b-header">
+          <div>
+            <div class="b-logo">Mon Assurance Scolaire</div>
+            <div class="b-company">
+              Matclo Assurance<br>
+              Valbonne (06560) · ORIAS n° XXXXXXXX<br>
+              Soumis au contrôle de l'ACPR
+            </div>
+            <div style="margin-top:14px;">
+              <div style="font-size:11px; color:rgba(255,255,255,0.4);">Produit : <strong style="color:white;">Mon Assurance Scolaire — Assurance RC Scolaire</strong></div>
+              <div style="font-size:11px; color:rgba(255,255,255,0.4); margin-top:3px;">Période : <strong style="color:white;" id="b-periode">1er au 30 avril 2026</strong></div>
+              <div style="font-size:11px; color:rgba(255,255,255,0.4); margin-top:3px;">Assureur : <strong style="color:white;">[Nom de l'assureur partenaire]</strong></div>
+              <div style="font-size:11px; color:rgba(255,255,255,0.4); margin-top:3px;">Contrat cadre : <strong style="color:white;">[Référence du contrat cadre]</strong></div>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="b-ref-num" id="b-ref">BDC-2026-04</div>
+            <div class="b-ref-info">
+              Émis le <span id="b-date-emission">30/04/2026</span><br>
+              <span id="b-nb-contrats">10 contrats</span> sur la période<br>
+              <br>
+              <span style="font-size:11px; color:#fbbf24;">TSCA applicable : 9% (taux droit commun)</span><br>
+              <span style="font-size:10px; color:rgba(255,255,255,0.3);">CGI art. 1001 — Assurance scolaire / RC</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Légende colonnes -->
+        <div class="legende">
+          <div class="leg-item"><div class="leg-dot" style="background:#93c5fd;"></div>Prime HT (base de calcul)</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#fbbf24;"></div>TSCA 9% (collectée par assureur)</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#4ade80;"></div>Commission courtier (% du HT)</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#f87171;"></div>Prime nette à reverser assureur</div>
+        </div>
+
+        <!-- Tableau principal -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Détail des souscriptions</div>
+            <div style="font-size:11px; color:rgba(255,255,255,0.35);">Taux commission : <span id="taux-affiche" style="color:#4ade80;">25%</span> · TSCA : <span style="color:#fbbf24;">9%</span> · Pas de TVA en assurance</div>
+          </div>
+          <div class="card-body" style="padding:0; overflow-x:auto;">
+            <table class="b-table">
+              <thead>
+                <tr>
+                  <th>N° contrat</th>
+                  <th>Date</th>
+                  <th>Souscripteur</th>
+                  <th>Ville</th>
+                  <th>Formule</th>
+                  <th style="color:#93c5fd;">Prime HT</th>
+                  <th style="color:#fbbf24;">TSCA 9%</th>
+                  <th style="color:#e2e8f0;">Prime TTC</th>
+                  <th style="color:#4ade80;">Commission</th>
+                  <th style="color:#f87171;">À reverser</th>
+                </tr>
+              </thead>
+              <tbody id="b-tbody">
+                <!-- Généré par JS -->
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="5"><strong>TOTAUX</strong></td>
+                  <td class="col-hors-taxe" id="tot-ht">—</td>
+                  <td class="col-tsca" id="tot-tsca">—</td>
+                  <td class="col-prime" id="tot-ttc">—</td>
+                  <td class="col-commission" id="tot-comm">—</td>
+                  <td class="col-reverser" id="tot-rev">—</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- Totaux visuels -->
+        <div class="totaux-grid">
+          <div class="total-card prime">
+            <div class="total-label">Primes HT collectées</div>
+            <div class="total-val" id="tot-ht-card">—</div>
+            <div class="total-detail">Base de calcul avant TSCA</div>
+          </div>
+          <div class="total-card taxe">
+            <div class="total-label">TSCA 9% — à reverser État</div>
+            <div class="total-val" id="tot-tsca-card">—</div>
+            <div class="total-detail">Via l'assureur · CGI art. 1001</div>
+          </div>
+          <div class="total-card commission">
+            <div class="total-label">💰 Commission à conserver</div>
+            <div class="total-val" id="tot-comm-card">—</div>
+            <div class="total-detail" id="tot-comm-detail">Taux appliqué sur HT</div>
+          </div>
+          <div class="total-card reverser">
+            <div class="total-label">⬆ Prime nette à reverser</div>
+            <div class="total-val" id="tot-rev-card">—</div>
+            <div class="total-detail">TTC − commission</div>
+          </div>
+        </div>
+
+        <!-- Explication TSCA -->
+        <div class="note-fiscale">
+          <div class="note-fiscale-title">📋 Fonctionnement de la TSCA — Ce qui t'incombe vs ce qui incombe à l'assureur</div>
+          <p>
+            <strong style="color:#fff;">Pas de TVA en assurance</strong> — Les primes d'assurance sont exonérées de TVA (art. 261 C du CGI).<br><br>
+            <strong style="color:#fbbf24;">TSCA (Taxe Spéciale sur les Conventions d'Assurances) = 9%</strong> pour la RC scolaire / garantie individuelle accident (taux de droit commun, CGI art. 1001).<br><br>
+            <strong style="color:#fff;">Qui collecte et reverse la TSCA ?</strong> C'est l'assureur (pas toi, courtier). La TSCA est incluse dans la prime TTC payée par le client, puis reversée par l'assureur au Service des Impôts des Entreprises via le formulaire n°2787-SD.<br><br>
+            <strong style="color:#fff;">Ton rôle en tant que courtier :</strong> Tu collectes la prime TTC, tu retiens ta commission (calculée sur le HT), et tu reverses le solde à l'assureur. C'est l'assureur qui ensuite reverse la TSCA à l'État.
+          </p>
+        </div>
+
+        <!-- Instructions reversement -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Instructions de reversement à l'assureur</div></div>
+          <div class="card-body">
+            <div class="reversement-grid">
+              <div class="rev-card">
+                <div class="rev-card-title">Coordonnées bancaires assureur</div>
+                <p>
+                  [Nom de l'assureur]<br>
+                  IBAN : FR76 XXXX XXXX XXXX XXXX XXXX XXX<br>
+                  BIC : XXXXXXXX<br>
+                  Réf. virement : <strong style="color:#4ade80;" id="rev-ref">BDC-2026-04</strong>
+                </p>
+              </div>
+              <div class="rev-card">
+                <div class="rev-card-title">Montant & délai</div>
+                <p>
+                  Montant à reverser : <strong style="color:#f87171;" id="rev-montant">—</strong><br>
+                  Date limite : <strong style="color:#fbbf24;" id="rev-echeance">30 mai 2026</strong><br>
+                  Mode : Virement bancaire<br>
+                  Joindre : ce bordereau signé
+                </p>
+              </div>
+              <div class="rev-card">
+                <div class="rev-card-title">Décomposition rappel</div>
+                <p>
+                  Prime TTC collectée : <span id="rev-ttc">—</span><br>
+                  − Commission courtier : <span style="color:#4ade80;" id="rev-comm">—</span><br>
+                  <strong>= À reverser : <span style="color:#f87171;" id="rev-net">—</span></strong><br>
+                  <span style="font-size:10px; color:rgba(255,255,255,0.3);">(dont TSCA <span id="rev-tsca">—</span> reversée par l'assureur à l'État)</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:11px; color:rgba(255,255,255,0.2); text-align:center; padding-top:8px;">
+          Bordereau généré automatiquement par Mon Assurance Scolaire Back-office · <span id="b-date-gen"></span> · À conserver 5 ans (art. L. 123-22 du Code de commerce)
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ FISCALITE ═══ -->
+    <div class="page" id="page-fiscalite">
+      <div class="topbar">
+        <div><div class="topbar-title">Fiscalité — TSCA</div><div class="topbar-sub">Taxe Spéciale sur les Conventions d'Assurances applicable à Mon Assurance Scolaire</div></div>
+      </div>
+      <div style="padding: 24px 28px;">
+        <div class="card" style="margin-bottom:18px;">
+          <div class="card-header"><div class="card-title">Taux TSCA applicables à Mon Assurance Scolaire</div></div>
+          <div class="card-body">
+            <table class="b-table">
+              <thead><tr><th>Garantie</th><th>Base légale</th><th>Taux TSCA</th><th>Qui reverse ?</th><th>Statut</th></tr></thead>
+              <tbody>
+                <tr><td>Responsabilité Civile (RC scolaire)</td><td>CGI art. 1001 — taux droit commun</td><td style="color:#fbbf24; font-weight:600;">9%</td><td>L'assureur → DGFiP</td><td><span class="badge badge-active">✓ Applicable</span></td></tr>
+                <tr><td>Garantie Individuelle Accident (GIA)</td><td>CGI art. 1001 — taux droit commun</td><td style="color:#fbbf24; font-weight:600;">9%</td><td>L'assureur → DGFiP</td><td><span class="badge badge-active">✓ Applicable</span></td></tr>
+                <tr><td>TVA</td><td>CGI art. 261 C — exonération</td><td style="color:#4ade80;">0% — Exonéré</td><td>N/A</td><td><span class="badge" style="background:rgba(74,222,128,0.1);color:#4ade80;">Exonéré</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Décomposition d'une prime Mon Assurance Scolaire</div></div>
+          <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+              <div class="taxes-box">
+                <div class="taxes-title">🎒 Formule Essentielle</div>
+                <div class="taxes-row"><span>Prime TTC client</span><span style="color:#fff; font-weight:600;">6,99€</span></div>
+                <hr class="taxes-divider">
+                <div class="taxes-row"><span>Prime HT (base)</span><span style="color:#93c5fd;">6,41€</span></div>
+                <div class="taxes-row"><span>TSCA 9%</span><span style="color:#fbbf24;">0,58€</span></div>
+                <hr class="taxes-divider">
+                <div class="taxes-row"><span>Commission 25% HT</span><span style="color:#4ade80;">1,60€</span></div>
+                <div class="taxes-total"><span style="color:#f87171;">À reverser assureur</span><span style="color:#f87171;">5,39€</span></div>
+              </div>
+              <div class="taxes-box">
+                <div class="taxes-title">⭐ Formule Sérénité</div>
+                <div class="taxes-row"><span>Prime TTC client</span><span style="color:#fff; font-weight:600;">9,99€</span></div>
+                <hr class="taxes-divider">
+                <div class="taxes-row"><span>Prime HT (base)</span><span style="color:#93c5fd;">9,17€</span></div>
+                <div class="taxes-row"><span>TSCA 9%</span><span style="color:#fbbf24;">0,83€</span></div>
+                <hr class="taxes-divider">
+                <div class="taxes-row"><span>Commission 25% HT</span><span style="color:#4ade80;">2,29€</span></div>
+                <div class="taxes-total"><span style="color:#f87171;">À reverser assureur</span><span style="color:#f87171;">7,70€</span></div>
+              </div>
+              <div class="taxes-box">
+                <div class="taxes-title">💎 Formule Intégrale</div>
+                <div class="taxes-row"><span>Prime TTC client</span><span style="color:#fff; font-weight:600;">16,99€</span></div>
+                <hr class="taxes-divider">
+                <div class="taxes-row"><span>Prime HT (base)</span><span style="color:#93c5fd;">15,59€</span></div>
+                <div class="taxes-row"><span>TSCA 9%</span><span style="color:#fbbf24;">1,40€</span></div>
+                <hr class="taxes-divider">
+                <div class="taxes-row"><span>Commission 25% HT</span><span style="color:#4ade80;">3,90€</span></div>
+                <div class="taxes-total"><span style="color:#f87171;">À reverser assureur</span><span style="color:#f87171;">13,09€</span></div>
+              </div>
+            </div>
+            <div style="margin-top:16px; padding:12px 16px; background:rgba(255,255,255,0.03); border-radius:8px; font-size:11px; color:rgba(255,255,255,0.4); line-height:1.8;">
+              <strong style="color:rgba(255,255,255,0.6);">Formule de calcul :</strong>
+              Prime HT = Prime TTC ÷ 1,09 · TSCA = Prime HT × 9% · Commission = Prime HT × taux · À reverser = Prime TTC − Commission
+              <br><strong style="color:#fbbf24;">Important :</strong> La TSCA est collectée par l'assureur dans le flux que tu lui reverses. C'est lui qui la déclare et la reverse à l'État via le formulaire 2787-SD. Tu n'as pas à effectuer cette déclaration fiscale.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SOUSCRIPTIONS ═══ -->
+    <div class="page" id="page-souscriptions">
+      <div class="topbar">
+        <div><div class="topbar-title">Souscriptions Mon Assurance Scolaire</div><div class="topbar-sub">Historique des contrats RC Scolaire</div></div>
+        <div class="topbar-actions">
+          <select class="form-select"><option>Toutes les formules</option><option>Essentielle</option><option>Sérénité</option><option>Intégrale</option></select>
+          <select class="form-select"><option>Tous les mois</option><option>Avril 2026</option><option>Mars 2026</option></select>
+        </div>
+      </div>
+      <div style="padding: 24px 28px;">
+        <div class="card">
+          <div class="card-body" style="padding:0; overflow-x:auto;">
+            <table class="sub-table">
+              <thead><tr><th>N° contrat</th><th>Date</th><th>Client</th><th>Ville</th><th>Formule</th><th>HT</th><th>TSCA</th><th>TTC</th><th>Commission</th><th>Statut</th></tr></thead>
+              <tbody id="sub-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ARTICLES ═══ -->
+    <div class="page" id="page-articles">
+      <div class="topbar">
+        <div><div class="topbar-title">Blog & Articles SEO</div><div class="topbar-sub">Stratégie de contenu géolocalisé — Mon Assurance Scolaire RC Scolaire</div></div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary" onclick="showToast('🚀 Ouverture éditeur article...')">+ Nouvel article</button>
+        </div>
+      </div>
+      <div style="padding: 24px 28px;">
+        <div class="note-fiscale" style="background:rgba(29,158,117,0.07); border-color:rgba(29,158,117,0.2);">
+          <div class="note-fiscale-title" style="color:#1D9E75;">🎯 Focus produit : Mon Assurance Scolaire uniquement</div>
+          <p>Suite à ta décision stratégique, le site et tous les articles SEO sont désormais <strong style="color:#fff;">centrés exclusivement sur la RC Scolaire Mon Assurance Scolaire</strong>. ZenPet et ZenTrip sont désactivés et pourront être réactivés ultérieurement. Cette concentration maximise l'autorité SEO sur un seul sujet et accélère le référencement.</p>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0;">
+            <table class="sub-table">
+              <thead><tr><th>Titre</th><th>Ville cible</th><th>Mot-clé</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td>Assurance scolaire Paris 2025 — RC enfant trajet métro</td><td>Paris</td><td>assurance scolaire Paris</td><td>15/04</td><td><span class="badge badge-active">Publié</span></td><td><button class="btn btn-secondary btn-sm">Modifier</button></td></tr>
+                <tr><td>RC scolaire Lyon — trajet TCL couvert, attestation immédiate</td><td>Lyon</td><td>assurance scolaire Lyon</td><td>14/04</td><td><span class="badge badge-active">Publié</span></td><td><button class="btn btn-secondary btn-sm">Modifier</button></td></tr>
+                <tr><td>Assurance scolaire Marseille — enfants REP et RTM</td><td>Marseille</td><td>assurance scolaire Marseille</td><td>13/04</td><td><span class="badge badge-pending">Brouillon</span></td><td><button class="btn btn-secondary btn-sm">Modifier</button></td></tr>
+                <tr><td>RC scolaire Toulouse — ville la plus jeune de France</td><td>Toulouse</td><td>assurance scolaire Toulouse</td><td>12/04</td><td><span class="badge badge-active">Publié</span></td><td><button class="btn btn-secondary btn-sm">Modifier</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Données souscriptions exemple
+const SOUSCRIPTIONS = [
+  { id:'ZK-2026-00241', date:'02/04', client:'M. Dupont Pierre', ville:'Paris 15e', formule:'Serenite', ttc:9.99 },
+  { id:'ZK-2026-00242', date:'03/04', client:'Mme Martin Sophie', ville:'Lyon 3e', formule:'Integrale', ttc:16.99 },
+  { id:'ZK-2026-00243', date:'05/04', client:'M. Bernard Jean', ville:'Marseille', formule:'Essentielle', ttc:6.99 },
+  { id:'ZK-2026-00244', date:'07/04', client:'Mme Petit Marie', ville:'Nice', formule:'Serenite', ttc:9.99 },
+  { id:'ZK-2026-00245', date:'08/04', client:'M. Leroy Thomas', ville:'Toulouse', formule:'Integrale', ttc:16.99 },
+  { id:'ZK-2026-00246', date:'10/04', client:'Mme Moreau Julie', ville:'Bordeaux', formule:'Serenite', ttc:9.99 },
+  { id:'ZK-2026-00247', date:'11/04', client:'M. Simon Paul', ville:'Nantes', formule:'Essentielle', ttc:6.99 },
+  { id:'ZK-2026-00248', date:'12/04', client:'Mme Laurent Anne', ville:'Strasbourg', formule:'Integrale', ttc:16.99 },
+  { id:'ZK-2026-00249', date:'14/04', client:'M. Dubois Marc', ville:'Lille', formule:'Serenite', ttc:9.99 },
+  { id:'ZK-2026-00250', date:'15/04', client:'Mme Robert Claire', ville:'Valbonne', formule:'Integrale', ttc:16.99 },
+];
+
+const FORMULE_LABELS = { Essentielle:'Essentielle', Serenite:'Sérénité', Integrale:'Intégrale' };
+const FORMULE_CLASS = { Essentielle:'f-essentielle', Serenite:'f-serenite', Integrale:'f-integrale' };
+const TSCA_RATE = 0.09;
+
+function calcRow(ttc, tauxComm) {
+  const ht = ttc / (1 + TSCA_RATE);
+  const tsca = ht * TSCA_RATE;
+  const comm = ht * (tauxComm / 100);
+  const rev = ttc - comm;
+  return { ht, tsca, ttc, comm, rev };
+}
+
+function fmt(n) { return n.toFixed(2).replace('.', ',') + '€'; }
+
+function updateBordereau() {
+  const tauxComm = parseInt(document.getElementById('sel-taux').value);
+  document.getElementById('taux-affiche').textContent = tauxComm + '%';
+
+  let totHT = 0, totTSCA = 0, totTTC = 0, totComm = 0, totRev = 0;
+
+  const tbody = document.getElementById('b-tbody');
+  tbody.innerHTML = SOUSCRIPTIONS.map(s => {
+    const r = calcRow(s.ttc, tauxComm);
+    totHT += r.ht; totTSCA += r.tsca; totTTC += r.ttc; totComm += r.comm; totRev += r.rev;
+    return `<tr>
+      <td style="font-size:11px; color:rgba(255,255,255,0.4);">${s.id}</td>
+      <td>${s.date}/2026</td>
+      <td>${s.client}</td>
+      <td>${s.ville}</td>
+      <td><span class="badge ${FORMULE_CLASS[s.formule]}">${FORMULE_LABELS[s.formule]}</span></td>
+      <td class="col-hors-taxe">${fmt(r.ht)}</td>
+      <td class="col-tsca">${fmt(r.tsca)}</td>
+      <td class="col-prime">${fmt(r.ttc)}</td>
+      <td class="col-commission">${fmt(r.comm)}</td>
+      <td class="col-reverser">${fmt(r.rev)}</td>
+    </tr>`;
+  }).join('');
+
+  // Totaux tableau
+  document.getElementById('tot-ht').textContent = fmt(totHT);
+  document.getElementById('tot-tsca').textContent = fmt(totTSCA);
+  document.getElementById('tot-ttc').textContent = fmt(totTTC);
+  document.getElementById('tot-comm').textContent = fmt(totComm);
+  document.getElementById('tot-rev').textContent = fmt(totRev);
+
+  // Totaux cards
+  document.getElementById('tot-ht-card').textContent = fmt(totHT);
+  document.getElementById('tot-tsca-card').textContent = fmt(totTSCA);
+  document.getElementById('tot-comm-card').textContent = fmt(totComm);
+  document.getElementById('tot-comm-detail').textContent = `Taux ${tauxComm}% appliqué sur HT`;
+  document.getElementById('tot-rev-card').textContent = fmt(totRev);
+
+  // Instructions reversement
+  document.getElementById('rev-montant').textContent = fmt(totRev);
+  document.getElementById('rev-ttc').textContent = fmt(totTTC);
+  document.getElementById('rev-comm').textContent = fmt(totComm);
+  document.getElementById('rev-net').textContent = fmt(totRev);
+  document.getElementById('rev-tsca').textContent = fmt(totTSCA);
+  document.getElementById('rev-ref').textContent = document.getElementById('b-ref').textContent;
+
+  // Date génération
+  document.getElementById('b-date-gen').textContent = new Date().toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'});
+}
+
+function renderSouscriptions() {
+  const tbody = document.getElementById('sub-tbody');
+  if (!tbody) return;
+  const tauxComm = 25;
+  tbody.innerHTML = SOUSCRIPTIONS.map(s => {
+    const r = calcRow(s.ttc, tauxComm);
+    return `<tr>
+      <td style="font-size:11px; color:rgba(255,255,255,0.4);">${s.id}</td>
+      <td>${s.date}</td>
+      <td>${s.client}</td>
+      <td>${s.ville}</td>
+      <td><span class="badge ${FORMULE_CLASS[s.formule]}">${FORMULE_LABELS[s.formule]}</span></td>
+      <td style="color:#93c5fd;">${fmt(r.ht)}</td>
+      <td style="color:#fbbf24;">${fmt(r.tsca)}</td>
+      <td>${fmt(r.ttc)}</td>
+      <td style="color:#4ade80;">${fmt(r.comm)}</td>
+      <td><span class="badge badge-active">Actif</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Navigation
+function showPage(id, navEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (navEl) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    navEl.classList.add('active');
+  }
+  if (id === 'souscriptions') renderSouscriptions();
+  if (id === 'bordereau') updateBordereau();
+}
+
+// ── Toast
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Init
+updateBordereau();
+</script>
+</body>
+</html>

@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Assurance Scolaire — Générateur SEO</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --green: #1D9E75; --green-dim: rgba(29,158,117,0.12);
+    --navy: #0B1F3A; --bg: #0a1220; --surf: #111c2e; --surf2: #162236;
+    --border: rgba(255,255,255,0.07); --text: #e2e8f0; --muted: rgba(255,255,255,0.38);
+    --amber: #F59E0B; --blue: #60A5FA; --red: #F87171; --purple: #c084fc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── Layout ── */
+  .app { display: grid; grid-template-columns: 340px 1fr; min-height: 100vh; }
+  .panel-left { background: var(--surf); border-right: 1px solid var(--border); height: 100vh; position: sticky; top: 0; display: flex; flex-direction: column; overflow-y: auto; }
+  .panel-right { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+  /* ── Sidebar header ── */
+  .s-head { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); }
+  .logo { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
+  .logo-mark { width: 30px; height: 30px; background: var(--green); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-name { font-size: 15px; font-weight: 600; color: #fff; }
+  .logo-sub { font-size: 10px; color: var(--muted); }
+  .s-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 3px; }
+  .s-sub { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+  /* ── Form sections ── */
+  .fs { padding: 15px 20px; border-bottom: 1px solid var(--border); }
+  .fl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .fl::after { content:''; flex:1; height:1px; background: var(--border); }
+  .fld { margin-bottom: 10px; }
+  .fld label { font-size: 11px; color: var(--muted); margin-bottom: 4px; display: block; }
+  .fld input, .fld select, .fld textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 7px; padding: 8px 11px; font-size: 12px;
+    font-family: 'DM Sans', sans-serif; color: var(--text); outline: none;
+  }
+  .fld input:focus, .fld select:focus, .fld textarea:focus { border-color: var(--green); }
+  .fld textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+  .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  /* ── Stratégie tabs ── */
+  .strat-tabs { display: flex; background: rgba(255,255,255,0.04); border-radius: 8px; padding: 3px; margin-bottom: 12px; }
+  .strat-tab { flex: 1; text-align: center; padding: 7px 6px; border-radius: 6px; font-size: 11px; color: var(--muted); cursor: pointer; transition: all .15s; }
+  .strat-tab.active { background: var(--green); color: white; font-weight: 500; }
+
+  /* ── Chips ── */
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip { padding: 4px 10px; border-radius: 5px; font-size: 11px; border: 1px solid var(--border); color: var(--muted); cursor: pointer; transition: all .15s; }
+  .chip:hover { border-color: var(--green); color: var(--green); }
+  .chip.active { background: var(--green-dim); border-color: var(--green); color: var(--green); font-weight: 500; }
+  .chip.priority { border-color: rgba(245,158,11,0.4); color: var(--amber); }
+  .chip.priority.active { background: rgba(245,158,11,0.12); border-color: var(--amber); color: var(--amber); }
+
+  /* ── Requêtes d'intention ── */
+  .intent-grid { display: flex; flex-direction: column; gap: 6px; }
+  .intent-card {
+    border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
+    cursor: pointer; transition: all .15s; background: var(--bg);
+  }
+  .intent-card:hover { border-color: var(--green); }
+  .intent-card.selected { border-color: var(--green); background: var(--green-dim); }
+  .intent-card.priority.selected { border-color: var(--amber); background: rgba(245,158,11,0.08); }
+  .intent-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .intent-name { font-size: 12px; font-weight: 500; color: var(--text); }
+  .intent-vol { font-size: 10px; color: var(--muted); }
+  .intent-keyword { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--blue); }
+  .vol-bar { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-top: 5px; }
+  .vol-fill { height: 100%; border-radius: 2px; }
+  .badge-intent { font-size: 9px; padding: 1px 6px; border-radius: 10px; font-weight: 500; }
+  .badge-achat { background: rgba(29,158,117,0.15); color: var(--green); }
+  .badge-saisonnier { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .badge-info { background: rgba(96,165,250,0.12); color: var(--blue); }
+  .badge-local { background: rgba(192,132,252,0.12); color: var(--purple); }
+
+  /* ── Score ── */
+  .score-wrap { padding: 14px 20px; border-bottom: 1px solid var(--border); }
+  .score-bar-bg { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin: 6px 0 10px; }
+  .score-bar-fill { height: 100%; border-radius: 2px; transition: width .4s, background .4s; }
+  .score-checks { display: flex; flex-direction: column; gap: 5px; }
+  .sc { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+  .sc.ok { color: #4ade80; }
+
+  /* ── Bouton générer ── */
+  .btn-gen {
+    margin: 14px 20px; width: calc(100% - 40px);
+    background: var(--green); color: #fff; border: none; border-radius: 9px;
+    padding: 13px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all .2s;
+  }
+  .btn-gen:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-gen:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+  /* ── Historique ── */
+  .hist { padding: 12px 20px; flex: 1; overflow-y: auto; }
+  .hist-title { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px; }
+  .hist-item { padding: 8px 11px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; margin-bottom: 5px; }
+  .hist-item:hover { border-color: var(--green); }
+  .hist-title-text { font-size: 11px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hist-meta { font-size: 10px; color: var(--muted); margin-top: 2px; display: flex; gap: 8px; }
+
+  /* ── Tabs droite ── */
+  .tabs-bar { background: var(--surf); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 0; flex-shrink: 0; }
+  .tab-btn { padding: 13px 16px; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s; display: flex; align-items: center; gap: 5px; }
+  .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+  .tab-content { display: none; flex: 1; overflow-y: auto; flex-direction: column; }
+  .tab-content.active { display: flex; }
+
+  /* ── Toolbar ── */
+  .toolbar { background: var(--surf); border-bottom: 1px solid var(--border); padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .toolbar-info { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .tb-badge { font-size: 10px; padding: 3px 9px; border-radius: 10px; font-weight: 500; }
+  .tb-green { background: var(--green-dim); color: var(--green); }
+  .tb-amber { background: rgba(245,158,11,0.12); color: var(--amber); }
+  .tb-blue { background: rgba(96,165,250,0.1); color: var(--blue); font-family: 'DM Mono', monospace; font-size: 10px; }
+  .toolbar-actions { display: flex; gap: 7px; }
+  .btn-s { padding: 6px 13px; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all .15s; }
+  .btn-s:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+  .btn-s.primary { background: var(--green); color: #fff; border-color: var(--green); }
+
+  /* ── Page render ── */
+  .page-render { flex: 1; overflow-y: auto; }
+
+  /* ── Styles page générée ── */
+  .gp { font-family: 'DM Sans', system-ui, sans-serif; background: #f4f6f9; }
+  .gp-nav { background: #EAF4F1; border-bottom: 1px solid rgba(0,0,0,.06); padding: 13px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .gp-logo { font-size: 17px; font-weight: 600; color: #0B1F3A; display: flex; align-items: center; gap: 8px; }
+  .gp-logo-dot { width: 26px; height: 26px; border-radius: 7px; background: #1D9E75; display: flex; align-items: center; justify-content: center; }
+  .gp-cta-nav { background: #0B1F3A; color: #fff; border: none; padding: 8px 18px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+
+  /* Hero */
+  .gp-hero { background: linear-gradient(135deg, #DFF2EC 0%, #EBF5FF 100%); padding: 44px 32px 36px; }
+  .gp-bc { font-size: 11px; color: #7a95a5; margin-bottom: 12px; }
+  .gp-bc span { color: #1D9E75; }
+  .gp-h1 { font-size: 28px; font-weight: 600; color: #0B1F3A; line-height: 1.2; margin-bottom: 12px; }
+  .gp-h1 em { color: #1D9E75; font-style: normal; }
+  .gp-intro { font-size: 14px; color: #4a6070; line-height: 1.7; max-width: 580px; margin-bottom: 22px; }
+  .gp-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 26px; }
+  .gp-btn-main { background: #1D9E75; color: #fff; border: none; padding: 12px 22px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .gp-btn-ghost { background: transparent; color: #0B1F3A; border: 1px solid rgba(11,31,58,.2); padding: 12px 22px; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+
+  /* USP bar */
+  .gp-usp { display: flex; gap: 0; flex-wrap: wrap; background: white; border-top: 1px solid #e8eaf0; border-bottom: 1px solid #e8eaf0; }
+  .gp-usp-item { flex: 1; min-width: 160px; display: flex; align-items: center; gap: 8px; padding: 12px 16px; font-size: 12px; color: #4a6070; border-right: 1px solid #e8eaf0; }
+  .gp-usp-item:last-child { border-right: none; }
+  .gp-usp-dot { width: 6px; height: 6px; border-radius: 50%; background: #1D9E75; flex-shrink: 0; }
+
+  /* Content */
+  .gp-content { display: grid; grid-template-columns: 1fr 260px; gap: 22px; padding: 28px 32px; max-width: 1000px; margin: 0 auto; }
+  .gp-art h2 { font-size: 18px; font-weight: 600; color: #0B1F3A; margin: 22px 0 9px; }
+  .gp-art h2:first-child { margin-top: 0; }
+  .gp-art h3 { font-size: 14px; font-weight: 500; color: #0B1F3A; margin: 16px 0 6px; }
+  .gp-art p { font-size: 13px; color: #4a6070; line-height: 1.8; margin-bottom: 9px; }
+  .gp-art strong { color: #0B1F3A; }
+  .gp-hl { background: #f0fdf8; border-left: 3px solid #1D9E75; border-radius: 0 7px 7px 0; padding: 12px 16px; margin: 12px 0; }
+  .gp-hl p { margin: 0; font-size: 13px; }
+
+  /* Comparatif formules */
+  .gp-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 12px 0; }
+  .gp-table th { background: #0B1F3A; color: white; padding: 9px 12px; text-align: left; font-weight: 500; }
+  .gp-table th:first-child { border-radius: 7px 0 0 0; }
+  .gp-table th:last-child { border-radius: 0 7px 0 0; }
+  .gp-table td { padding: 8px 12px; border-bottom: 1px solid #f0f4f8; color: #4a6070; }
+  .gp-table tr:nth-child(even) td { background: #f9fafb; }
+  .gp-table .rec { background: #f0fdf8 !important; }
+  .gp-chk { color: #1D9E75; } .gp-x { color: #cbd5e0; }
+  .gp-prix { background: #DFF2EC; color: #0F6E56; padding: 2px 8px; border-radius: 10px; font-weight: 500; font-size: 11px; }
+
+  /* FAQ */
+  .gp-faq { margin: 12px 0; }
+  .gp-faq-item { border: 1px solid #e8eaf0; border-radius: 8px; margin-bottom: 6px; background: white; overflow: hidden; }
+  .gp-faq-q { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; cursor: pointer; }
+  .gp-faq-q:hover { background: #f7f8fa; }
+  .gp-faq-q span:first-child { font-size: 13px; font-weight: 500; color: #0B1F3A; flex: 1; line-height: 1.4; }
+  .gp-faq-a { display: none; padding: 0 14px 12px; font-size: 13px; color: #4a6070; line-height: 1.7; border-top: 1px solid #f0f4f8; }
+  .gp-faq-item.open .gp-faq-a { display: block; padding-top: 10px; }
+
+  /* Sidebar */
+  .gp-side { position: sticky; top: 0; display: flex; flex-direction: column; gap: 12px; }
+  .gp-side-card { background: white; border: 1px solid #e8eaf0; border-radius: 11px; padding: 16px; }
+  .gp-side-title { font-size: 12px; font-weight: 500; color: #0B1F3A; margin-bottom: 12px; padding-bottom: 9px; border-bottom: 1px solid #f0f4f8; }
+  .gp-fi { border: 1px solid #e8eaf0; border-radius: 7px; padding: 10px 12px; margin-bottom: 7px; }
+  .gp-fi.rec { border-color: #1D9E75; background: #f0fdf8; }
+  .gp-fi-name { font-size: 12px; font-weight: 500; color: #0B1F3A; display: flex; justify-content: space-between; }
+  .gp-fi-prix { font-size: 14px; font-weight: 600; color: #1D9E75; }
+  .gp-fi-desc { font-size: 11px; color: #6b7280; margin-top: 2px; }
+  .gp-btn-side { display: block; text-align: center; background: #1D9E75; color: white; border: none; padding: 10px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; width: 100%; margin-top: 10px; font-family: 'DM Sans', sans-serif; }
+  .gp-tr { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #6b7280; margin-bottom: 6px; }
+  .gp-tr-dot { width: 5px; height: 5px; border-radius: 50%; background: #1D9E75; flex-shrink: 0; }
+
+  .gp-cta { background: #0B1F3A; padding: 36px 32px; text-align: center; }
+  .gp-cta h2 { font-size: 20px; font-weight: 600; color: white; margin-bottom: 8px; }
+  .gp-cta p { font-size: 13px; color: rgba(255,255,255,.5); margin-bottom: 18px; }
+  .gp-cta button { background: #1D9E75; color: white; border: none; padding: 12px 28px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .gp-schema { font-size: 10px; color: #9ca3af; text-align: center; padding: 10px 32px; background: #f4f6f9; line-height: 1.6; }
+
+  /* Tags */
+  .gp-tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
+  .gp-tag { background: #f0f4f8; color: #4a6070; font-size: 11px; padding: 3px 9px; border-radius: 5px; }
+  .gp-tag.hl { background: #DFF2EC; color: #0F6E56; }
+
+  /* Méta panel */
+  .meta-panel { padding: 22px 24px; }
+  .meta-sec { background: var(--surf2); border: 1px solid var(--border); border-radius: 11px; padding: 16px; margin-bottom: 14px; }
+  .meta-sec-title { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 12px; }
+  .meta-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+  .meta-row label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .meta-val { font-size: 11px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 7px 11px; font-family: 'DM Mono', monospace; line-height: 1.5; }
+  .meta-val.g { color: #4ade80; } .meta-val.b { color: var(--blue); } .meta-val.a { color: var(--amber); }
+  .gp-prev { background: #fff; border-radius: 9px; padding: 14px 18px; }
+  .gp-prev-url { font-size: 11px; color: #1a7f37; margin-bottom: 3px; }
+  .gp-prev-title { font-size: 17px; color: #1a0dab; margin-bottom: 3px; font-weight: 400; }
+  .gp-prev-desc { font-size: 12px; color: #4d5156; line-height: 1.5; }
+
+  /* Matrice pages */
+  .matrix-panel { padding: 22px 24px; }
+  .matrix-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px,1fr)); gap: 10px; }
+  .m-card { background: var(--surf2); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; }
+  .m-card-url { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--blue); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-card-title { font-size: 11px; color: var(--text); font-weight: 500; margin-bottom: 4px; line-height: 1.4; }
+  .m-card-meta { font-size: 10px; color: var(--muted); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .m-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .m-dot.live { background: var(--green); } .m-dot.gen { background: var(--amber); } .m-dot.todo { background: rgba(255,255,255,0.15); }
+  .m-pilier { font-size: 9px; padding: 1px 6px; border-radius: 8px; font-weight: 500; }
+  .m-p1 { background: rgba(29,158,117,0.15); color: var(--green); }
+  .m-p2 { background: rgba(245,158,11,0.12); color: var(--amber); }
+  .m-p3 { background: rgba(192,132,252,0.12); color: var(--purple); }
+
+  /* Source HTML */
+  .src-wrap { flex: 1; overflow: auto; }
+  .src-wrap pre { padding: 22px 24px; font-family: 'DM Mono', monospace; font-size: 11px; line-height: 1.7; color: #a5b4fc; white-space: pre-wrap; word-break: break-word; }
+
+  /* Empty & Loading */
+  .empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; gap: 10px; }
+  .empty-icon { font-size: 36px; opacity: .25; }
+  .empty-title { font-size: 14px; font-weight: 500; color: var(--text); }
+  .empty-sub { font-size: 12px; color: var(--muted); max-width: 300px; line-height: 1.6; }
+  .loading { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+  .spinner { width: 32px; height: 32px; border: 2.5px solid rgba(29,158,117,.2); border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .load-steps { display: flex; flex-direction: column; gap: 7px; }
+  .ls { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--muted); }
+  .ls.ok { color: #4ade80; } .ls.act { color: var(--text); }
+  .ls-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+  .ls.ok .ls-dot { background: #4ade80; } .ls.act .ls-dot { background: var(--green); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 18px; right: 18px; background: var(--green); color: white; padding: 9px 16px; border-radius: 8px; font-size: 12px; font-weight: 500; transform: translateY(70px); opacity: 0; transition: all .3s; z-index: 9999; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.08); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- ═══ PANNEAU GAUCHE ═══ -->
+<div class="panel-left">
+  <div class="s-head">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white"/><path d="M5 8L7 10L11 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div><div class="logo-name">Mon Assurance Scolaire</div><div class="logo-sub">Générateur SEO v2</div></div>
+    </div>
+    <div class="s-title">🎯 Pages d'intention d'achat + géolocalisation</div>
+    <div class="s-sub">Génère les pages qui convertissent vraiment — classées par volume de recherche réel.</div>
+  </div>
+
+  <!-- Stratégie -->
+  <div class="fs">
+    <div class="fl">Stratégie SEO</div>
+    <div class="strat-tabs" id="strat-tabs">
+      <div class="strat-tab active" onclick="setStrat('intention',this)" title="Pages basées sur l'intention d'achat">🎯 Intention</div>
+      <div class="strat-tab" onclick="setStrat('geo',this)" title="Pages géolocalisées ville">📍 Géo</div>
+      <div class="strat-tab" onclick="setStrat('combo',this)" title="Intention + ville combinés">⚡ Combo</div>
+    </div>
+
+    <!-- Requêtes d'intention -->
+    <div id="section-intention">
+      <div class="fld">
+        <label>Requête cible <span style="color:var(--amber);font-size:9px;">classées par volume estimé</span></label>
+        <div class="intent-grid" id="intent-grid"></div>
+      </div>
+    </div>
+
+    <!-- Géolocalisation -->
+    <div id="section-geo" style="display:none;">
+      <div class="fld">
+        <label>Ville</label>
+        <select id="f-ville" onchange="updateFromVille()">
+          <option value="">— Choisir —</option>
+          <optgroup label="Top 10 nationales">
+            <option value="paris">Paris</option><option value="lyon">Lyon</option>
+            <option value="marseille">Marseille</option><option value="toulouse">Toulouse</option>
+            <option value="nice">Nice</option><option value="nantes">Nantes</option>
+            <option value="bordeaux">Bordeaux</option><option value="montpellier">Montpellier</option>
+            <option value="strasbourg">Strasbourg</option><option value="lille">Lille</option>
+          </optgroup>
+          <optgroup label="Côte d'Azur">
+            <option value="antibes">Antibes</option><option value="cannes">Cannes</option>
+            <option value="valbonne">Valbonne</option><option value="grasse">Grasse</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="fld">
+        <label>Quartier / Arrondissement <span style="color:var(--purple);font-size:9px;">longue traîne</span></label>
+        <input type="text" id="f-quartier" placeholder="Ex: 16e arrondissement, Croix-Rousse..." oninput="updateScore()"/>
+      </div>
+    </div>
+
+    <!-- Mode combo -->
+    <div id="section-combo" style="display:none;">
+      <div class="fld">
+        <label>Requête cible</label>
+        <select id="f-intent-combo">
+          <option value="pas-chere">Assurance scolaire pas chère</option>
+          <option value="attestation">Attestation immédiate</option>
+          <option value="en-ligne">En ligne en 3 minutes</option>
+          <option value="maternelle">Maternelle / primaire</option>
+          <option value="cantine">Cantine obligatoire</option>
+          <option value="sans-franchise">Sans franchise</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label>Ville</label>
+        <select id="f-ville-combo" onchange="updateFromVille()">
+          <option value="">— Nationale (sans ville) —</option>
+          <option value="paris">Paris</option><option value="lyon">Lyon</option>
+          <option value="marseille">Marseille</option><option value="toulouse">Toulouse</option>
+          <option value="nice">Nice</option><option value="nantes">Nantes</option>
+          <option value="bordeaux">Bordeaux</option><option value="montpellier">Montpellier</option>
+          <option value="strasbourg">Strasbourg</option><option value="lille">Lille</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Options communes -->
+  <div class="fs">
+    <div class="fl">Paramètres page</div>
+    <div class="fld">
+      <label>Niveau scolaire ciblé</label>
+      <div class="chips" id="chips-niveau">
+        <div class="chip active" data-val="tous" onclick="toggleNiveau(this)">Tous</div>
+        <div class="chip" data-val="maternelle" onclick="toggleNiveau(this)">Maternelle</div>
+        <div class="chip" data-val="primaire" onclick="toggleNiveau(this)">Primaire</div>
+        <div class="chip" data-val="college" onclick="toggleNiveau(this)">Collège</div>
+        <div class="chip" data-val="lycee" onclick="toggleNiveau(this)">Lycée</div>
+      </div>
+    </div>
+    <div class="fld">
+      <label>Accroche principale</label>
+      <input type="text" id="f-accroche" placeholder="Ex: Attestation envoyée en 3 minutes" oninput="updateScore()"/>
+    </div>
+    <div class="fld">
+      <label>Argument différenciant</label>
+      <textarea id="f-argument" placeholder="Ex: Sans franchise, sans tacite reconduction, courtier certifié ORIAS basé à Valbonne..." oninput="updateScore()"></textarea>
+    </div>
+  </div>
+
+  <!-- Score -->
+  <div class="score-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:11px;color:var(--muted);">Score page</span>
+      <span id="sc-pct" style="font-size:12px;font-weight:600;color:var(--green);">0%</span>
+    </div>
+    <div class="score-bar-bg"><div class="score-bar-fill" id="sc-bar" style="width:0%;background:var(--green);"></div></div>
+    <div class="score-checks" id="sc-checks"></div>
+  </div>
+
+  <button class="btn-gen" id="btn-gen" onclick="generate()" disabled>
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1l1.8 4.6H14l-3.8 2.8 1.4 4.6L7.5 10.2 3.4 13l1.4-4.6L1 5.6h4.7z" fill="white"/></svg>
+    Générer la page
+  </button>
+
+  <div class="hist">
+    <div class="hist-title">Récemment générées</div>
+    <div id="hist-list"><div style="font-size:11px;color:var(--muted);text-align:center;padding:10px;">Aucune page générée</div></div>
+  </div>
+</div>
+
+<!-- ═══ PANNEAU DROIT ═══ -->
+<div class="panel-right">
+  <div class="tabs-bar">
+    <div class="tab-btn active" onclick="switchTab('preview',this)">👁 Aperçu</div>
+    <div class="tab-btn" onclick="switchTab('meta',this)">🔍 Méta SEO</div>
+    <div class="tab-btn" onclick="switchTab('source',this)">💻 HTML</div>
+    <div class="tab-btn" onclick="switchTab('matrix',this)">🗺 Matrice (<span id="mc">10</span>)</div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="tab-content active" id="tab-preview">
+    <div class="toolbar" id="toolbar" style="display:none;">
+      <div class="toolbar-info">
+        <span class="tb-badge tb-green" id="tb-score">—</span>
+        <span class="tb-badge tb-amber" id="tb-intent">—</span>
+        <span class="tb-badge tb-blue" id="tb-url">—</span>
+      </div>
+      <div class="toolbar-actions">
+        <button class="btn-s" onclick="copyHtml()">📋 Copier HTML</button>
+        <button class="btn-s" onclick="dlHtml()">⬇ Télécharger</button>
+        <button class="btn-s primary" onclick="publishPage()">🚀 Publier</button>
+      </div>
+    </div>
+    <div class="page-render" id="page-render">
+      <div class="empty">
+        <div class="empty-icon">⚡</div>
+        <div class="empty-title">Choisis une requête et génère ta page</div>
+        <div class="empty-sub">Les pages basées sur l'intention d'achat génèrent 5× plus de conversions que les pages géolocalisées seules.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- META -->
+  <div class="tab-content" id="tab-meta">
+    <div class="meta-panel" id="meta-panel">
+      <div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">Génère une page pour voir ses métas</div></div>
+    </div>
+  </div>
+
+  <!-- SOURCE -->
+  <div class="tab-content" id="tab-source">
+    <div class="src-wrap" id="src-wrap">
+      <div class="empty"><div class="empty-icon">💻</div><div class="empty-title">Le HTML source apparaîtra ici</div></div>
+    </div>
+  </div>
+
+  <!-- MATRIX -->
+  <div class="tab-content" id="tab-matrix">
+    <div class="matrix-panel">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;">
+        <div>
+          <div style="font-size:14px;font-weight:500;color:#fff;">Matrice de toutes les pages SEO</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px;">Pilier 1 = Intention d'achat · Pilier 2 = Saisonnier · Pilier 3 = Géolocalisation</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;font-size:11px;color:var(--muted);">
+          <span><span class="m-dot live" style="display:inline-block;margin-right:4px;"></span>En ligne</span>
+          <span><span class="m-dot gen" style="display:inline-block;margin-right:4px;"></span>Généré</span>
+          <span><span class="m-dot todo" style="display:inline-block;margin-right:4px;"></span>À créer</span>
+        </div>
+      </div>
+      <div class="matrix-grid" id="matrix-grid"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// DONNÉES INTENTIONS
+// ══════════════════════════════════════════════
+
+const INTENTS = [
+  {
+    id:'pas-chere', pilier:1, type:'achat',
+    label:'Assurance scolaire pas chère',
+    keyword:'assurance scolaire pas chère',
+    vol:'⬛⬛⬛⬛⬛', volEst:'5 000–10 000/mois', volPct:90,
+    url:'assurance-scolaire-pas-chere',
+    h1:'L\'assurance scolaire la moins chère en ligne — dès <em>6,99€/an</em>',
+    desc:'Comparez les meilleures assurances scolaires pas chères. Souscrivez en ligne en 3 min, attestation immédiate. Dès 6,99€/an, sans franchise, sans tacite reconduction.',
+    intro:'Trouver une assurance scolaire vraiment pas chère sans sacrifier les garanties essentielles : c\'est exactement ce que propose Mon Assurance Scolaire. Pas de frais cachés, pas de franchise, pas de tacite reconduction — juste une protection complète au juste prix.',
+    angle:'prix',
+    usp:['Dès 6,99€ / an — le tarif le plus bas du marché', 'Sans franchise sur nos 3 formules', 'Attestation envoyée instantanément par email', 'Pas de tacite reconduction — vous contrôlez'],
+    priority:true
+  },
+  {
+    id:'attestation', pilier:1, type:'achat',
+    label:'Attestation scolaire immédiate',
+    keyword:'assurance scolaire attestation immédiate',
+    vol:'⬛⬛⬛⬛⬜', volEst:'2 000–5 000/mois', volPct:72,
+    url:'assurance-scolaire-attestation-immediate',
+    h1:'Assurance scolaire — attestation <em>immédiate</em> par email en 3 minutes',
+    desc:'Obtenez votre attestation d\'assurance scolaire immédiatement après souscription. Paiement CB sécurisé, attestation PDF envoyée par email en quelques secondes. Dès 6,99€/an.',
+    intro:'Vous êtes à la veille de la rentrée, l\'école réclame une attestation d\'assurance scolaire et vous n\'avez pas encore souscrit ? Avec Mon Assurance Scolaire, souscrivez en 3 minutes et recevez votre attestation PDF par email dans la seconde qui suit votre paiement.',
+    angle:'rapidite',
+    usp:['Attestation PDF envoyée en quelques secondes', 'Souscription 100% en ligne, 24h/24', 'Valable dès le lendemain de souscription', 'Aucun délai de carence'],
+    priority:true
+  },
+  {
+    id:'en-ligne', pilier:1, type:'achat',
+    label:'Souscrire en ligne en 3 min',
+    keyword:'assurance scolaire en ligne',
+    vol:'⬛⬛⬛⬜⬜', volEst:'2 000–4 000/mois', volPct:65,
+    url:'assurance-scolaire-en-ligne',
+    h1:'Assurance scolaire <em>100% en ligne</em> — souscription en 3 minutes',
+    desc:'Souscrivez votre assurance scolaire entièrement en ligne, sans rendez-vous, sans agence. 3 étapes, paiement CB sécurisé, attestation immédiate. Dès 6,99€/an.',
+    intro:'Fini les rendez-vous en agence et les formulaires papier. Mon Assurance Scolaire est pensé pour les parents connectés : tout se passe en ligne, depuis votre téléphone ou votre ordinateur, en moins de 3 minutes.',
+    angle:'digital',
+    usp:['100% en ligne, 24h/24, 7j/7', 'Souscription en 3 étapes simples', 'Depuis mobile, tablette ou ordinateur', 'Espace client pour retrouver vos documents'],
+    priority:true
+  },
+  {
+    id:'rentree', pilier:2, type:'saisonnier',
+    label:'Assurance scolaire rentrée 2025',
+    keyword:'assurance scolaire rentrée 2025',
+    vol:'⬛⬛⬛⬛⬛', volEst:'Pic massif août-septembre', volPct:95,
+    url:'assurance-scolaire-rentree-2025-2026',
+    h1:'Assurance scolaire rentrée 2025-2026 — <em>souscription immédiate</em>',
+    desc:'Préparez la rentrée scolaire 2025-2026 avec l\'assurance Mon Assurance Scolaire. Attestation immédiate, formules dès 6,99€/an. Valable maternelle, primaire, collège, lycée et études supérieures.',
+    intro:'La rentrée scolaire 2025 approche : maternelle, primaire, collège, lycée ou études supérieures, il est temps de penser à l\'assurance scolaire de vos enfants. Mon Assurance Scolaire vous permet de souscrire en ligne en 3 minutes et de recevoir votre attestation avant même d\'arriver à l\'école.',
+    angle:'rentree',
+    usp:['Souscription valable dès le 1er septembre', 'Formules maternelle → études supérieures', 'Attestation envoyée avant la rentrée', 'Renouvellement simple à l\'échéance'],
+    priority:true
+  },
+  {
+    id:'cantine', pilier:1, type:'achat',
+    label:'Assurance scolaire cantine obligatoire',
+    keyword:'assurance scolaire cantine',
+    vol:'⬛⬛⬛⬜⬜', volEst:'1 000–3 000/mois', volPct:58,
+    url:'assurance-scolaire-cantine-obligatoire',
+    h1:'Assurance scolaire pour la <em>cantine</em> — obligatoire, attestation immédiate',
+    desc:'La cantine scolaire exige une attestation d\'assurance RC. Souscrivez Mon Assurance Scolaire en 3 minutes et recevez votre attestation immédiatement. Dès 9,99€/an avec RC incluse.',
+    intro:'Si votre enfant mange à la cantine, l\'établissement peut exiger une attestation d\'assurance couvrant la responsabilité civile. C\'est une activité facultative au sens juridique, donc l\'assurance scolaire y devient obligatoire. Mon Assurance Scolaire vous couvre immédiatement.',
+    angle:'cantine',
+    usp:['RC scolaire incluse dès la formule Sérénité', 'Attestation valable pour la cantine', 'Acceptée dans tous les établissements', 'Souscription possible à tout moment de l\'année'],
+  },
+  {
+    id:'maternelle', pilier:1, type:'achat',
+    label:'Assurance scolaire maternelle',
+    keyword:'assurance scolaire maternelle',
+    vol:'⬛⬛⬛⬜⬜', volEst:'800–2 000/mois', volPct:52,
+    url:'assurance-scolaire-maternelle',
+    h1:'Assurance scolaire <em>maternelle</em> — dès 6,99€/an, attestation immédiate',
+    desc:'Protégez votre enfant dès la maternelle avec Mon Assurance Scolaire. Couverture RC, accidents scolaires et périscolaires. Attestation immédiate par email. Dès 6,99€/an.',
+    intro:'L\'entrée à la maternelle est souvent la première fois que les parents ont besoin d\'une attestation d\'assurance scolaire. Dès la petite section, les enfants participent à des activités qui nécessitent cette couverture. Mon Assurance Scolaire couvre votre enfant dès la crèche.',
+    angle:'maternelle',
+    usp:['Couverture dès 2 ans (crèche)', 'RC et accidents couverts dès la maternelle', 'Activités périscolaires incluses', 'Attestation reconnue dans tous les établissements'],
+  },
+  {
+    id:'sans-franchise', pilier:1, type:'achat',
+    label:'Assurance scolaire sans franchise',
+    keyword:'assurance scolaire sans franchise',
+    vol:'⬛⬛⬜⬜⬜', volEst:'300–800/mois', volPct:38,
+    url:'assurance-scolaire-sans-franchise',
+    h1:'Assurance scolaire <em>sans franchise</em> — aucun reste à charge',
+    desc:'Mon Assurance Scolaire : l\'assurance scolaire sans franchise sur toutes les formules. Aucun reste à charge en cas de sinistre. Dès 6,99€/an, attestation immédiate.',
+    intro:'Beaucoup d\'assurances scolaires appliquent une franchise — c\'est-à-dire une somme qui reste à votre charge en cas de sinistre. Chez Mon Assurance Scolaire, aucune franchise sur nos 3 formules. Ce que nous promettons, c\'est ce que vous recevez.',
+    angle:'sans-franchise',
+    usp:['0€ de franchise sur les 3 formules', 'Remboursement intégral selon les plafonds', 'Aucun reste à charge surprise', 'Transparence totale des garanties'],
+  },
+  {
+    id:'obligatoire', pilier:2, type:'info',
+    label:'L\'assurance scolaire est-elle obligatoire ?',
+    keyword:'assurance scolaire obligatoire',
+    vol:'⬛⬛⬛⬛⬜', volEst:'3 000–8 000/mois', volPct:80,
+    url:'assurance-scolaire-obligatoire',
+    h1:'L\'assurance scolaire est-elle <em>obligatoire</em> en 2025 ?',
+    desc:'Réponse complète : l\'assurance scolaire n\'est pas obligatoire pour les cours, mais elle l\'est pour la cantine, les sorties et le périscolaire. Tout savoir en 3 minutes.',
+    intro:'La question revient chaque rentrée : l\'assurance scolaire est-elle obligatoire ? La réponse est nuancée, et beaucoup de parents prennent de mauvaises décisions par méconnaissance. Voici la règle précise, claire, sans jargon.',
+    angle:'info',
+    usp:['Réponse officielle Ministry of Education', 'Cas précis : cantine, sorties, périscolaire', 'Ce que couvre votre assurance habitation', 'Souscrire en 3 min si vous n\'êtes pas couvert'],
+  },
+  {
+    id:'habitation', pilier:2, type:'info',
+    label:'Mon assurance habitation suffit-elle ?',
+    keyword:'assurance scolaire habitation suffit',
+    vol:'⬛⬛⬜⬜⬜', volEst:'500–1 500/mois', volPct:42,
+    url:'assurance-scolaire-habitation-suffit',
+    h1:'Mon assurance habitation <em>couvre-t-elle</em> mon enfant à l\'école ?',
+    desc:'Votre assurance habitation couvre la RC mais pas les accidents subis par votre enfant. On vous explique les doublons à éviter et ce que Mon Assurance Scolaire ajoute vraiment.',
+    intro:'Beaucoup de parents pensent que leur assurance habitation couvre entièrement leur enfant à l\'école. C\'est partiellement vrai — et partiellement faux. Voici exactement ce que votre MRH couvre, et ce qu\'il manque.',
+    angle:'info',
+    usp:['Comparatif habitation vs assurance scolaire', 'Ce que la RC habitation ne couvre pas', 'Formule Essentielle pour éviter les doublons', 'Économisez jusqu\'à 10€/an'],
+  },
+];
+
+// Données villes
+const VILLES = {
+  paris:{ label:'Paris', transport:'métro, RER, bus RATP', zone:'C', eleves:'292 202' },
+  lyon:{ label:'Lyon', transport:'TCL métro/tramway', zone:'A', eleves:'340 000' },
+  marseille:{ label:'Marseille', transport:'RTM métro/tramway', zone:'B', eleves:'540 000' },
+  toulouse:{ label:'Toulouse', transport:'Tisséo métro/tramway', zone:'C', eleves:'503 000' },
+  nice:{ label:'Nice', transport:'Lignes d\'Azur tramway', zone:'B', eleves:'370 000' },
+  nantes:{ label:'Nantes', transport:'TAN tramway/Busway', zone:'B', eleves:'683 000' },
+  bordeaux:{ label:'Bordeaux', transport:'TBM tramway/bateau-bus', zone:'A', eleves:'564 000' },
+  montpellier:{ label:'Montpellier', transport:'TAM 5 lignes tramway', zone:'C', eleves:'492 000' },
+  strasbourg:{ label:'Strasbourg', transport:'CTS 7 lignes tramway', zone:'B', eleves:'324 000' },
+  lille:{ label:'Lille', transport:'Ilévia métro VAL', zone:'B', eleves:'756 000' },
+  antibes:{ label:'Antibes', transport:'bus Envibus', zone:'B', eleves:'12 000' },
+  cannes:{ label:'Cannes', transport:'bus Palm Bus', zone:'B', eleves:'11 000' },
+  valbonne:{ label:'Valbonne', transport:'bus Envibus', zone:'B', eleves:'2 800' },
+  grasse:{ label:'Grasse', transport:'bus Sillages', zone:'B', eleves:'8 500' },
+};
+
+// Matrice de pages initiale
+let allPages = [
+  // Pilier 1 — Intention
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire-pas-chere/', title:'Assurance scolaire pas chère — dès 6,99€/an', pilier:1, type:'achat', status:'todo' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire-attestation-immediate/', title:'Attestation scolaire immédiate — 3 minutes', pilier:1, type:'achat', status:'todo' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire-en-ligne/', title:'Assurance scolaire 100% en ligne', pilier:1, type:'achat', status:'todo' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire-sans-franchise/', title:'Assurance scolaire sans franchise', pilier:1, type:'achat', status:'todo' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire-cantine-obligatoire/', title:'Assurance scolaire cantine obligatoire', pilier:1, type:'achat', status:'todo' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire-maternelle/', title:'Assurance scolaire maternelle', pilier:1, type:'achat', status:'todo' },
+  // Pilier 2 — Saisonnier / Info
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire-rentree-2025-2026/', title:'Assurance scolaire rentrée 2025-2026', pilier:2, type:'saisonnier', status:'todo' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire-obligatoire/', title:'L\'assurance scolaire est-elle obligatoire ?', pilier:2, type:'info', status:'todo' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire-habitation-suffit/', title:'Mon habitation couvre-t-elle mon enfant ?', pilier:2, type:'info', status:'todo' },
+  // Pilier 3 — Géo (existantes)
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire/paris/', title:'Assurance scolaire Paris', pilier:3, type:'geo', status:'live' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire/lyon/', title:'Assurance scolaire Lyon', pilier:3, type:'geo', status:'live' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire/marseille/', title:'Assurance scolaire Marseille', pilier:3, type:'geo', status:'live' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire/toulouse/', title:'Assurance scolaire Toulouse', pilier:3, type:'geo', status:'live' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire/nice/', title:'Assurance scolaire Nice', pilier:3, type:'geo', status:'live' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire/nantes/', title:'Assurance scolaire Nantes', pilier:3, type:'geo', status:'live' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire/bordeaux/', title:'Assurance scolaire Bordeaux', pilier:3, type:'geo', status:'live' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire/montpellier/', title:'Assurance scolaire Montpellier', pilier:3, type:'geo', status:'live' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire/strasbourg/', title:'Assurance scolaire Strasbourg', pilier:3, type:'geo', status:'live' },
+  { url:'mon-assurance-scolaire.fr/assurance-scolaire/lille/', title:'Assurance scolaire Lille', pilier:3, type:'geo', status:'live' },
+];
+
+let currentStrat = 'intention';
+let selectedIntent = null;
+let currentHtml = '';
+let lastData = null;
+let histList = [];
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+
+function init() {
+  renderIntentGrid();
+  renderMatrix();
+  updateScore();
+}
+
+function renderIntentGrid() {
+  const grid = document.getElementById('intent-grid');
+  grid.innerHTML = INTENTS.map(i => `
+    <div class="intent-card ${i.priority ? 'priority' : ''} ${selectedIntent?.id === i.id ? 'selected' : ''}"
+         onclick="selectIntent('${i.id}')">
+      <div class="intent-top">
+        <div class="intent-name">${i.label}</div>
+        <span class="badge-intent badge-${i.type}">${
+          i.type === 'achat' ? '🛒 Achat' :
+          i.type === 'saisonnier' ? '📅 Saisonnier' :
+          i.type === 'info' ? 'ℹ️ Info' : i.type
+        }</span>
+      </div>
+      <div class="intent-keyword">${i.keyword}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:5px;">
+        <div class="intent-vol">${i.volEst}</div>
+        ${i.priority ? '<span style="font-size:9px;color:var(--amber);">⭐ Priorité</span>' : ''}
+      </div>
+      <div class="vol-bar"><div class="vol-fill" style="width:${i.volPct}%;background:${
+        i.type === 'achat' ? 'var(--green)' : i.type === 'saisonnier' ? 'var(--amber)' : 'var(--blue)'
+      };"></div></div>
+    </div>
+  `).join('');
+}
+
+function selectIntent(id) {
+  selectedIntent = INTENTS.find(i => i.id === id);
+  renderIntentGrid();
+  updateScore();
+}
+
+function setStrat(s, el) {
+  currentStrat = s;
+  document.querySelectorAll('.strat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('section-intention').style.display = s === 'intention' ? '' : 'none';
+  document.getElementById('section-geo').style.display = s === 'geo' ? '' : 'none';
+  document.getElementById('section-combo').style.display = s === 'combo' ? '' : 'none';
+  updateScore();
+}
+
+function toggleNiveau(el) {
+  if (el.dataset.val === 'tous') {
+    document.querySelectorAll('#chips-niveau .chip').forEach(c => c.classList.toggle('active', c.dataset.val === 'tous'));
+  } else {
+    el.classList.toggle('active');
+    document.querySelector('#chips-niveau .chip[data-val="tous"]').classList.remove('active');
+  }
+  updateScore();
+}
+
+function updateFromVille() { updateScore(); }
+
+// ══════════════════════════════════════════════
+// SEO SCORE
+// ══════════════════════════════════════════════
+
+function updateScore() {
+  const checks = [];
+
+  if (currentStrat === 'intention') {
+    checks.push({ ok: !!selectedIntent, label: 'Requête d\'intention sélectionnée' });
+    checks.push({ ok: selectedIntent?.type === 'achat', label: 'Requête à intention d\'achat (meilleure conversion)' });
+    checks.push({ ok: !!selectedIntent?.priority, label: 'Requête prioritaire (volume élevé)' });
+  } else if (currentStrat === 'geo') {
+    const ville = document.getElementById('f-ville').value;
+    const quartier = document.getElementById('f-quartier').value;
+    checks.push({ ok: !!ville, label: 'Ville sélectionnée' });
+    checks.push({ ok: quartier.length > 2, label: 'Quartier (longue traîne)' });
+    checks.push({ ok: false, label: 'Volume faible — combiner avec intention (mode Combo)' });
+  } else {
+    const ville = document.getElementById('f-ville-combo').value;
+    const intent = document.getElementById('f-intent-combo').value;
+    checks.push({ ok: !!intent, label: 'Requête d\'intention sélectionnée' });
+    checks.push({ ok: !!ville, label: 'Ville cible sélectionnée' });
+    checks.push({ ok: !!intent && !!ville, label: 'Combo intention + géo = longue traîne qualifiée' });
+  }
+
+  const arg = document.getElementById('f-argument').value;
+  checks.push({ ok: arg.length > 20, label: 'Argument différenciant renseigné' });
+  checks.push({ ok: arg.length > 50, label: 'Argument détaillé (> 50 car.)' });
+
+  const score = Math.round(checks.filter(c => c.ok).length / checks.length * 100);
+  document.getElementById('sc-pct').textContent = score + '%';
+  const bar = document.getElementById('sc-bar');
+  bar.style.width = score + '%';
+  bar.style.background = score >= 70 ? '#4ade80' : score >= 40 ? 'var(--amber)' : 'var(--red)';
+
+  document.getElementById('sc-checks').innerHTML = checks.map(c =>
+    `<div class="sc ${c.ok ? 'ok' : ''}"><span>${c.ok ? '✅' : '⬜'}</span><span>${c.label}</span></div>`
+  ).join('');
+
+  document.getElementById('btn-gen').disabled = score < 25;
+}
+
+// ══════════════════════════════════════════════
+// GÉNÉRATION
+// ══════════════════════════════════════════════
+
+function generate() {
+  const btn = document.getElementById('btn-gen');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> Génération...';
+
+  const render = document.getElementById('page-render');
+  render.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      <div class="load-steps">
+        <div class="ls ok"><div class="ls-dot"></div>Sélection analysée</div>
+        <div class="ls act" id="ls1"><div class="ls-dot"></div>Construction de la structure SEO...</div>
+        <div class="ls" id="ls2"><div class="ls-dot"></div>Rédaction du contenu</div>
+        <div class="ls" id="ls3"><div class="ls-dot"></div>Intégration Schema.org</div>
+        <div class="ls" id="ls4"><div class="ls-dot"></div>Rendu final</div>
+      </div>
+    </div>`;
+
+  setTimeout(() => { step('ls1','ls2'); }, 350);
+  setTimeout(() => { step('ls2','ls3'); }, 700);
+  setTimeout(() => { step('ls3','ls4'); }, 1000);
+
+  setTimeout(() => {
+    const data = collectData();
+    lastData = data;
+    const html = buildPage(data);
+    currentHtml = html;
+
+    render.innerHTML = `<div class="gp">${html}</div>`;
+    render.querySelectorAll('.gp-faq-q').forEach(q => {
+      q.addEventListener('click', () => q.closest('.gp-faq-item').classList.toggle('open'));
+    });
+
+    document.getElementById('toolbar').style.display = 'flex';
+    document.getElementById('tb-score').textContent = `Score SEO élevé`;
+    document.getElementById('tb-intent').textContent = data.intentLabel;
+    document.getElementById('tb-url').textContent = 'mon-assurance-scolaire.fr/' + data.url;
+
+    buildMeta(data);
+    document.getElementById('src-wrap').innerHTML = `<pre>${escapeHtml(html)}</pre>`;
+
+    addToHistory(data);
+    updatePageStatus(data.url);
+
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1l1.8 4.6H14l-3.8 2.8 1.4 4.6L7.5 10.2 3.4 13l1.4-4.6L1 5.6h4.7z" fill="white"/></svg> Générer la page';
+    showToast('✅ Page générée — ' + data.intentLabel);
+  }, 1350);
+}
+
+function step(doneId, activeId) {
+  document.getElementById(doneId).className = 'ls ok';
+  document.getElementById(doneId).querySelector('.ls-dot').style.background = '#4ade80';
+  if (activeId) document.getElementById(activeId).className = 'ls act';
+}
+
+function collectData() {
+  const arg = document.getElementById('f-argument').value;
+  const accroche = document.getElementById('f-accroche').value;
+  const niveaux = [...document.querySelectorAll('#chips-niveau .chip.active')].map(c => c.dataset.val);
+
+  if (currentStrat === 'intention' && selectedIntent) {
+    return {
+      intent: selectedIntent,
+      intentLabel: selectedIntent.label,
+      url: selectedIntent.url,
+      h1: selectedIntent.h1,
+      desc: selectedIntent.desc,
+      intro: selectedIntent.intro,
+      usp: selectedIntent.usp,
+      ville: null, villeData: null,
+      arg, accroche, niveaux, angle: selectedIntent.angle,
+      keyword: selectedIntent.keyword,
+      pilier: selectedIntent.pilier,
+    };
+  }
+
+  if (currentStrat === 'geo') {
+    const villeKey = document.getElementById('f-ville').value;
+    const quartier = document.getElementById('f-quartier').value;
+    const vd = VILLES[villeKey] || {};
+    const ville = vd.label || villeKey;
+    const slug = ville.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-');
+    return {
+      intent: null, intentLabel: `Assurance scolaire ${ville}`,
+      url: `assurance-scolaire/${slug}${quartier ? '/' + quartier.toLowerCase().replace(/\s+/g,'-') : ''}`,
+      h1: `Assurance scolaire <em>${ville}</em>${quartier ? ', ' + quartier : ''} — RC enfant, attestation immédiate`,
+      desc: `Assurance scolaire à ${ville}${quartier ? ', ' + quartier : ''} : souscription en 3 min, attestation immédiate, ${vd.transport || ''} couvert. Dès 6,99€/an.`,
+      intro: `Votre enfant est scolarisé à ${ville}${quartier ? ', ' + quartier : ''} ? Mon Assurance Scolaire vous assure en 3 minutes et vous envoie l\'attestation instantanément.`,
+      usp: ['Trajet ' + (vd.transport || '') + ' couvert', 'Public & privé, tout ' + ville, 'Attestation immédiate par email', 'Courtier certifié ORIAS & ACPR'],
+      ville, villeData: vd, quartier,
+      arg, accroche, niveaux, angle: 'geo', keyword: 'assurance scolaire ' + ville,
+      pilier: 3,
+    };
+  }
+
+  // Combo
+  const intentKey = document.getElementById('f-intent-combo').value;
+  const villeKey = document.getElementById('f-ville-combo').value;
+  const baseIntent = INTENTS.find(i => i.id === intentKey) || INTENTS[0];
+  const vd = villeKey ? VILLES[villeKey] : null;
+  const villeLabel = vd?.label || '';
+  const slug = baseIntent.url + (villeLabel ? '-' + villeLabel.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-') : '');
+
+  return {
+    intent: baseIntent,
+    intentLabel: baseIntent.label + (villeLabel ? ' — ' + villeLabel : ''),
+    url: slug,
+    h1: baseIntent.h1.replace('</em>', `</em> à ${villeLabel}`),
+    desc: baseIntent.desc + (villeLabel ? ` Pour les familles de ${villeLabel}.` : ''),
+    intro: baseIntent.intro + (villeLabel ? ` Mon Assurance Scolaire est disponible pour toutes les familles de ${villeLabel}.` : ''),
+    usp: [...baseIntent.usp, ...(vd ? ['Trajet ' + vd.transport + ' couvert', 'Toute l\'académie couverte'] : [])],
+    ville: villeLabel, villeData: vd,
+    arg, accroche, niveaux, angle: baseIntent.angle, keyword: baseIntent.keyword + (villeLabel ? ' ' + villeLabel : ''),
+    pilier: villeLabel ? 3 : baseIntent.pilier,
+  };
+}
+
+// ══════════════════════════════════════════════
+// BUILD PAGE HTML
+// ══════════════════════════════════════════════
+
+function buildPage(d) {
+  const { h1, desc, intro, usp, ville, villeData, keyword, angle, niveaux, arg, intent } = d;
+  const niveauxStr = niveaux.includes('tous') ? 'de la maternelle aux études supérieures' :
+    niveaux.map(n => ({maternelle:'maternelle',primaire:'primaire',college:'collège',lycee:'lycée'}[n]||n)).join(', ');
+  const transport = villeData?.transport || 'tous réseaux de transport';
+
+  return `
+<div class="gp-nav">
+  <div class="gp-logo">
+    <div class="gp-logo-dot"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white"/><path d="M5 8L7 10L11 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    Mon Assurance Scolaire
+  </div>
+  <button class="gp-cta-nav">Je souscris →</button>
+</div>
+
+<div class="gp-hero">
+  <div class="gp-bc">Accueil › <span>${d.intentLabel}</span></div>
+  <div class="gp-h1">${h1}</div>
+  <div class="gp-intro">${intro}</div>
+  <div class="gp-btns">
+    <button class="gp-btn-main">Souscrire Mon Assurance Scolaire dès 6,99€ →</button>
+    <button class="gp-btn-ghost">Comparer les formules</button>
+  </div>
+</div>
+
+<div class="gp-usp">
+  ${usp.map(u => `<div class="gp-usp-item"><div class="gp-usp-dot"></div>${u}</div>`).join('')}
+</div>
+
+<div class="gp-content">
+  <div class="gp-art">
+
+    <h2>${angle === 'prix' ? 'Pourquoi Mon Assurance Scolaire est la moins chère du marché' :
+          angle === 'rapidite' ? 'Votre attestation en quelques secondes — vraiment' :
+          angle === 'digital' ? 'La souscription 100% en ligne, sans friction' :
+          angle === 'rentree' ? 'Préparez la rentrée 2025-2026 sans stress' :
+          angle === 'cantine' ? 'Cantine scolaire : pourquoi l\'assurance est obligatoire' :
+          angle === 'maternelle' ? 'Assurance scolaire dès la maternelle : ce qu\'il faut savoir' :
+          angle === 'sans-franchise' ? 'Pourquoi la franchise change tout' :
+          angle === 'info' ? 'La règle exacte, clairement expliquée' :
+          'Ce que vous devez savoir'}</h2>
+
+    ${arg ? `<p>${arg}</p>` : `<p>Mon Assurance Scolaire est l'assurance scolaire conçue pour les parents qui veulent une protection complète sans complication. Disponible 24h/24, 7j/7, notre produit couvre votre enfant ${niveauxStr}.</p>`}
+
+    <div class="gp-hl">
+      <p><strong>Pourquoi choisir Mon Assurance Scolaire :</strong> ${usp.slice(0,3).join(' · ')}. Courtier certifié ORIAS, soumis au contrôle de l'ACPR.</p>
+    </div>
+
+    ${angle === 'prix' ? `
+    <h3>Comparatif des 3 formules — transparence totale</h3>
+    <p>Voici exactement ce que vous obtenez pour chaque euro dépensé :</p>` :
+    angle === 'cantine' ? `
+    <h3>Pourquoi la cantine rend l'assurance obligatoire</h3>
+    <p>La cantine scolaire est juridiquement une <strong>activité facultative</strong> — même si votre enfant y va tous les jours. À ce titre, l'établissement est en droit d'exiger une attestation d'assurance couvrant la responsabilité civile. Sans assurance, votre enfant peut se voir refuser l'accès à la cantine.</p>` :
+    angle === 'info' ? `
+    <h3>La règle officielle du Ministère de l'Éducation nationale</h3>
+    <p>L'assurance scolaire est <strong>facultative</strong> pour les activités scolaires obligatoires (cours, récréation, sport inscrit dans l'emploi du temps). Elle devient <strong>obligatoire</strong> pour toute activité facultative : sorties scolaires, cantine, périscolaire, classes découverte.</p>` :
+    `<h3>Comment ça fonctionne</h3><p>Souscrivez en ligne en 3 étapes. Choisissez votre formule, renseignez les informations de votre enfant, payez par carte bancaire. Votre attestation arrive dans votre boîte mail immédiatement.</p>`}
+
+    <table class="gp-table">
+      <thead><tr><th>Garantie</th><th>Essentielle<br><small>6,99€/an</small></th><th class="rec">Sérénité ★<br><small>9,99€/an</small></th><th>Intégrale<br><small>16,99€/an</small></th></tr></thead>
+      <tbody>
+        <tr><td>Garantie individuelle accident</td><td class="gp-chk">✓</td><td class="gp-chk rec">✓</td><td class="gp-chk">✓</td></tr>
+        <tr><td>Responsabilité civile scolaire</td><td class="gp-x">—</td><td class="gp-chk rec">✓</td><td class="gp-chk">✓</td></tr>
+        <tr><td>Trajet ${transport.split(',')[0]}</td><td class="gp-x">—</td><td class="gp-chk rec">✓</td><td class="gp-chk">✓</td></tr>
+        <tr><td>Couverture extrascolaire 365j</td><td class="gp-x">—</td><td class="gp-x rec">—</td><td class="gp-chk">✓</td></tr>
+        <tr><td>Franchise</td><td><span class="gp-prix">0€</span></td><td class="rec"><span class="gp-prix">0€</span></td><td><span class="gp-prix">0€</span></td></tr>
+        <tr><td>Frais médicaux</td><td>5 000€</td><td class="rec">10 000€</td><td>20 000€</td></tr>
+        <tr><td><strong>Prix</strong></td><td><span class="gp-prix">6,99€</span></td><td class="rec"><span class="gp-prix">9,99€</span></td><td><span class="gp-prix">16,99€</span></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Questions fréquentes</h2>
+    <div class="gp-faq">
+      ${buildFAQ(d).map(f => `
+      <div class="gp-faq-item">
+        <div class="gp-faq-q"><span>${f.q}</span><span style="color:#1D9E75;">▾</span></div>
+        <div class="gp-faq-a">${f.a}</div>
+      </div>`).join('')}
+    </div>
+
+    ${ville ? `
+    <h2>Assurance scolaire dans les autres villes</h2>
+    <div class="gp-tags">
+      ${Object.values(VILLES).map(v => `<span class="gp-tag ${v.label===ville?'hl':''}">${v.label}</span>`).join('')}
+    </div>` : `
+    <h2>Disponible partout en France</h2>
+    <p>Mon Assurance Scolaire est disponible dans toutes les villes de France métropolitaine. Consultez nos pages dédiées pour votre ville.</p>
+    <div class="gp-tags">
+      ${Object.values(VILLES).map(v => `<span class="gp-tag">${v.label}</span>`).join('')}
+    </div>`}
+
+    <p style="font-size:10px;color:#9ca3af;margin-top:18px;line-height:1.6;">
+      Mon Assurance Scolaire — Matclo Assurance · Valbonne (06560) · Courtier enregistré à l'ORIAS · Soumis au contrôle de l'ACPR.
+      Documents contractuels (IPID, CGA) accessibles avant souscription, conformément à la réglementation DDA.
+    </p>
+  </div>
+
+  <div class="gp-side">
+    <div class="gp-side-card">
+      <div class="gp-side-title">Souscrire Mon Assurance Scolaire</div>
+      <div class="gp-fi"><div class="gp-fi-name">Essentielle <span class="gp-fi-prix">6,99€</span></div><div class="gp-fi-desc">Accident scolaire — sans RC</div></div>
+      <div class="gp-fi rec"><div class="gp-fi-name">⭐ Sérénité <span class="gp-fi-prix">9,99€</span></div><div class="gp-fi-desc">RC + trajet + sans franchise</div></div>
+      <div class="gp-fi"><div class="gp-fi-name">Intégrale <span class="gp-fi-prix">16,99€</span></div><div class="gp-fi-desc">365j/an + sport + loisirs</div></div>
+      <button class="gp-btn-side">Je souscris en 3 min →</button>
+    </div>
+    <div class="gp-side-card">
+      <div class="gp-side-title">Pourquoi Mon Assurance Scolaire ?</div>
+      ${usp.slice(0,5).map(u => `<div class="gp-tr"><div class="gp-tr-dot"></div>${u}</div>`).join('')}
+    </div>
+  </div>
+</div>
+
+<div class="gp-cta">
+  <h2>${angle === 'prix' ? 'Souscrivez la moins chère — dès 6,99€/an' :
+       angle === 'attestation' ? 'Recevez votre attestation en quelques secondes' :
+       angle === 'rentree' ? 'Prêt pour la rentrée 2025 — en 3 minutes' :
+       'Protégez votre enfant maintenant'}</h2>
+  <p>Attestation immédiate · Sans franchise · Dès 6,99€/an · Courtier certifié ORIAS${ville ? ' · ' + ville : ''}</p>
+  <button>Souscrire Mon Assurance Scolaire maintenant →</button>
+</div>`;
+}
+
+function buildFAQ(d) {
+  const { angle, ville, transport } = d;
+  const faqs = {
+    'prix': [
+      { q:'Pourquoi Mon Assurance Scolaire est-elle moins chère que les grandes compagnies ?', a:'Parce que nous sommes un courtier digital sans agence physique, sans intermédiaire inutile. Nos frais de structure réduits nous permettent de vous proposer des formules dès 6,99€/an — soit moins de 58 centimes par mois.' },
+      { q:'Y a-t-il vraiment zéro franchise sur toutes les formules ?', a:'Oui, aucune franchise sur nos 3 formules. Contrairement à certaines assurances scolaires classiques qui appliquent des franchises de 120€ à 150€, vous recevez le remboursement intégral prévu dans les conditions générales, sans reste à charge fixe.' },
+      { q:'Les garanties sont-elles moins bonnes parce que c\'est moins cher ?', a:'Non. Le prix bas vient de notre modèle digital, pas d\'un nivellement par le bas des garanties. Comparez nos conditions générales avec celles d\'autres assureurs — les plafonds et garanties sont comparables, voire supérieurs sur certains points.' },
+    ],
+    'attestation': [
+      { q:'L\'attestation est-elle vraiment envoyée immédiatement ?', a:'Oui. Dès la validation de votre paiement par carte bancaire, un email automatique contenant votre attestation PDF est envoyé à l\'adresse indiquée lors de la souscription. Cela prend généralement moins de 30 secondes.' },
+      { q:'L\'attestation est-elle acceptée par tous les établissements ?', a:'Oui. Notre attestation est un document officiel émis par un courtier enregistré à l\'ORIAS, au même titre que celle d\'un assureur traditionnel. Tous les établissements scolaires publics et privés l\'acceptent.' },
+      { q:'Que faire si je n\'ai pas reçu l\'attestation ?', a:'Vérifiez d\'abord vos spams. Si l\'email n\'est pas là, contactez-nous par email ou téléphone — nous vous renvoyons l\'attestation dans la minute. Votre espace client vous permet aussi de la télécharger à tout moment.' },
+    ],
+    'cantine': [
+      { q:'Mon enfant peut-il aller à la cantine sans assurance scolaire ?', a:'Non. La cantine est une activité facultative au sens juridique. L\'établissement peut refuser l\'accès à un enfant sans attestation d\'assurance couvrant la responsabilité civile. Nos formules Sérénité et Intégrale incluent cette couverture.' },
+      { q:'La RC de mon assurance habitation suffit-elle pour la cantine ?', a:'Peut-être pour la RC, mais vérifiez auprès de votre assureur que vos enfants sont bien couverts dans le cadre scolaire. Notre formule Essentielle (sans RC, 6,99€/an) complète votre habitation si la RC est déjà couverte.' },
+      { q:'Dois-je souscrire une assurance spécifique pour la cantine ou une assurance générale suffit ?', a:'Une assurance scolaire générale comme Mon Assurance Scolaire suffit. Vous n\'avez pas besoin d\'une assurance dédiée à la cantine — notre contrat couvre l\'ensemble des activités scolaires et périscolaires.' },
+    ],
+    'maternelle': [
+      { q:'À partir de quel âge puis-je souscrire Mon Assurance Scolaire ?', a:'Dès 2 ans (crèche). Mon Assurance Scolaire couvre votre enfant de la crèche jusqu\'aux études supérieures, sans rupture de contrat à chaque changement de niveau scolaire.' },
+      { q:'L\'assurance est-elle obligatoire en maternelle ?', a:'Pas pour les activités inscrites à l\'emploi du temps. En revanche, elle est obligatoire pour les sorties, la cantine, les activités périscolaires. En pratique, l\'école demande presque toujours une attestation dès la rentrée de maternelle.' },
+      { q:'Mon enfant en maternelle n\'a pas besoin d\'une formule complète ?', a:'La formule Essentielle à 6,99€/an est souvent suffisante si votre assurance habitation couvre déjà la RC. Si votre enfant mange à la cantine, prenez la Sérénité à 9,99€/an qui inclut la RC.' },
+    ],
+    'info': [
+      { q:'L\'assurance scolaire est-elle obligatoire pour les cours ?', a:'Non. Pour toutes les activités inscrites dans l\'emploi du temps de votre enfant (cours, sport obligatoire, récréation), l\'assurance n\'est pas obligatoire et l\'école ne peut pas conditionner l\'inscription à une attestation.' },
+      { q:'Pour quelles activités l\'assurance devient-elle obligatoire ?', a:'La cantine, les sorties scolaires facultatives (musée, classe verte, voyage), les activités périscolaires (études surveillées, activités culturelles après l\'école). L\'organisateur peut refuser la participation sans attestation.' },
+      { q:'Mon assurance habitation ne suffit-elle pas ?', a:'Elle couvre la RC (dommages causés à autrui) mais pas les accidents subis par votre enfant lui-même. Si votre enfant se blesse seul en récréation, votre MRH ne prend rien en charge. La garantie individuelle accident est indispensable.' },
+    ],
+  };
+
+  const defaults = [
+    { q:'Comment souscrire Mon Assurance Scolaire ?', a:'Tout se passe en ligne en 3 étapes : (1) choisissez votre formule, (2) renseignez les informations de votre enfant, (3) payez par carte bancaire. Votre attestation arrive immédiatement par email. Aucun rendez-vous, aucun papier.' },
+    { q:'Puis-je souscrire à n\'importe quel moment de l\'année ?', a:'Oui. Vous pouvez souscrire Mon Assurance Scolaire à n\'importe quel moment — que ce soit à la rentrée, en cours d\'année ou la veille d\'une sortie scolaire. La couverture démarre dès le lendemain de la souscription.' },
+    { q:'Y a-t-il une tacite reconduction ?', a:'Non. C\'est l\'un de nos avantages distinctifs. À chaque date d\'échéance, votre contrat s\'arrête. Il ne se renouvelle que si vous le souhaitez, sans prélèvement automatique surprise.' },
+  ];
+
+  return [...(faqs[angle] || defaults), defaults[2]];
+}
+
+// ══════════════════════════════════════════════
+// MÉTA SEO
+// ══════════════════════════════════════════════
+
+function buildMeta(d) {
+  const title = d.intentLabel + ' — Mon Assurance Scolaire, Mon Assurance Scolaire';
+  const desc = d.desc;
+  const url = 'mon-assurance-scolaire.fr/' + d.url + '/';
+  const keyword = d.keyword;
+
+  document.getElementById('meta-panel').innerHTML = `
+    <div class="meta-sec">
+      <div class="meta-sec-title">🔍 Prévisualisation Google</div>
+      <div class="gp-prev">
+        <div class="gp-prev-url">mon-assurance-scolaire.fr › ${d.url.replace(/\//g,' › ')}</div>
+        <div class="gp-prev-title">${title.substring(0,65)}${title.length>65?'…':''}</div>
+        <div class="gp-prev-desc">${desc.substring(0,160)}${desc.length>160?'…':''}</div>
+      </div>
+    </div>
+    <div class="meta-sec">
+      <div class="meta-sec-title">📋 Balises méta</div>
+      <div class="meta-row"><label>Title (${title.length} car.)</label><div class="meta-val b">${title}</div></div>
+      <div class="meta-row"><label>Meta description (${desc.length} car.)</label><div class="meta-val">${desc}</div></div>
+      <div class="meta-row"><label>Mot-clé principal</label><div class="meta-val g">${keyword}</div></div>
+      <div class="meta-row"><label>Canonical URL</label><div class="meta-val g">https://${url}</div></div>
+      <div class="meta-row"><label>Pilier SEO</label><div class="meta-val ${d.pilier===1?'g':d.pilier===2?'a':'b'}">Pilier ${d.pilier} — ${d.pilier===1?'Intention d\'achat':d.pilier===2?'Saisonnier / Info':'Géolocalisation'}</div></div>
+    </div>
+    <div class="meta-sec">
+      <div class="meta-sec-title">🏷️ Schema.org JSON-LD</div>
+      <div class="meta-row"><div class="meta-val" style="font-size:10px;color:#a5b4fc;">{
+  "@context": "https://schema.org",
+  "@type": "${d.angle === 'info' ? 'FAQPage' : 'Service'}",
+  "name": "Mon Assurance Scolaire — ${d.intentLabel}",
+  "description": "${desc.substring(0,120).replace(/"/g,"'")}",
+  "provider": {
+    "@type": "LocalBusiness",
+    "name": "Mon Assurance Scolaire — Matclo Assurance",
+    "address": { "addressLocality": "Valbonne", "postalCode": "06560" }
+  },
+  "url": "https://${url}",
+  "priceRange": "6,99€ - 16,99€"
+}</div></div>
+    </div>
+    <div class="meta-sec">
+      <div class="meta-sec-title">📊 Analyse SEO</div>
+      <div class="meta-row"><label>Volume estimé</label><div class="meta-val ${d.intent?.priority ? 'g' : 'a'}">${d.intent?.volEst || 'Variable selon la ville'}</div></div>
+      <div class="meta-row"><label>Type d'intention</label><div class="meta-val">${d.intent?.type === 'achat' ? '🛒 Achat direct — forte conversion' : d.intent?.type === 'saisonnier' ? '📅 Saisonnier — pic août-septembre' : '📍 Géolocalisation — maillage local'}</div></div>
+      <div class="meta-row"><label>Concurrence estimée</label><div class="meta-val ${d.pilier===1?'g':'a'}">${d.pilier===1?'Modérée — courtiers spécialisés seulement':'Faible à modérée — peu de pages dédiées'}</div></div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+// MATRICE
+// ══════════════════════════════════════════════
+
+function renderMatrix() {
+  document.getElementById('mc').textContent = allPages.length;
+  document.getElementById('matrix-grid').innerHTML = allPages.map(p => `
+    <div class="m-card">
+      <div class="m-card-url">${p.url}</div>
+      <div class="m-card-title">${p.title}</div>
+      <div class="m-card-meta">
+        <span class="m-pilier ${p.pilier===1?'m-p1':p.pilier===2?'m-p2':'m-p3'}">Pilier ${p.pilier}</span>
+        <span>${p.type}</span>
+        <span class="m-dot ${p.status}" style="display:inline-block;margin-left:auto;"></span>
+      </div>
+    </div>`).join('');
+}
+
+function updatePageStatus(url) {
+  const page = allPages.find(p => p.url.includes(url.split('/')[0]));
+  if (page) page.status = 'gen';
+  renderMatrix();
+}
+
+// ══════════════════════════════════════════════
+// HISTORIQUE
+// ══════════════════════════════════════════════
+
+function addToHistory(d) {
+  histList.unshift(d);
+  if (histList.length > 6) histList.pop();
+  document.getElementById('hist-list').innerHTML = histList.map(h => `
+    <div class="hist-item">
+      <div class="hist-title-text">${h.intentLabel}</div>
+      <div class="hist-meta"><span>${h.url}</span></div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
+
+function switchTab(id, el) {
+  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function copyHtml() {
+  navigator.clipboard.writeText(currentHtml).then(() => showToast('📋 HTML copié !'));
+}
+
+function dlHtml() {
+  const blob = new Blob([`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>${lastData?.intentLabel}</title></head><body>${currentHtml}</body></html>`], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `mon-assurance-scolaire-${(lastData?.url||'page').replace(/\//g,'-')}.html`;
+  a.click();
+  showToast('⬇ Téléchargé !');
+}
+
+function publishPage() {
+  if (lastData) {
+    allPages = allPages.map(p => p.url.includes(lastData.url.split('/')[0]) ? {...p, status:'live'} : p);
+    renderMatrix();
+    showToast('🚀 Page marquée comme publiée !');
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+init();
+</script>
+</body>
+</html>

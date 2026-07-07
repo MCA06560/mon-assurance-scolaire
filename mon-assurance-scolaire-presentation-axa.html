@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Assurance Scolaire — Présentation AXA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#060d18;color:#e2e8f0;min-height:100vh}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(29,158,117,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(29,158,117,0.04) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+.bg-glow{position:fixed;z-index:0;width:900px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(29,158,117,0.07) 0%,transparent 70%);top:-100px;left:50%;transform:translateX(-50%);pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px 60px}
+.header{text-align:center;padding:60px 0 48px}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(29,158,117,0.1);border:1px solid rgba(29,158,117,0.25);border-radius:100px;padding:7px 18px;font-size:11px;font-weight:700;color:#1D9E75;letter-spacing:1px;text-transform:uppercase;margin-bottom:28px}
+.bdot{width:7px;height:7px;border-radius:50%;background:#1D9E75;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-family:'Sora',sans-serif;font-size:clamp(34px,5vw,58px);font-weight:800;line-height:1.08;letter-spacing:-0.03em;color:#fff;margin-bottom:18px}
+h1 em{color:#1D9E75;font-style:normal}
+.hsub{font-size:16px;color:rgba(255,255,255,0.42);max-width:500px;margin:0 auto 36px;line-height:1.7}
+.cband{display:inline-flex;gap:24px;flex-wrap:wrap;justify-content:center;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 28px;margin-bottom:10px}
+.ci{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.55)}
+.ci strong{color:#1D9E75;font-weight:600}
+.cid{width:5px;height:5px;border-radius:50%;background:#1D9E75}
+.pdate{font-size:11px;color:rgba(255,255,255,0.2);margin-top:10px;letter-spacing:.5px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);border-radius:14px;overflow:hidden;margin-bottom:52px}
+.stat{background:rgba(255,255,255,0.02);padding:22px 20px;text-align:center}
+.sv{font-family:'Sora',sans-serif;font-size:30px;font-weight:800;color:#1D9E75;margin-bottom:5px}
+.sl{font-size:11px;color:rgba(255,255,255,0.32);line-height:1.5}
+.sh{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.shn{width:30px;height:30px;border-radius:8px;background:rgba(29,158,117,0.1);border:1px solid rgba(29,158,117,0.2);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:12px;font-weight:700;color:#1D9E75}
+.shl{font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1.2px}
+.shline{flex:1;height:1px;background:rgba(255,255,255,0.06)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:40px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g1{grid-template-columns:1fr}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 22px 18px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden;transition:all .22s}
+.card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(29,158,117,0.5),transparent);opacity:0;transition:opacity .22s}
+.card:hover{background:rgba(255,255,255,0.055);border-color:rgba(29,158,117,0.3);transform:translateY(-4px);box-shadow:0 20px 48px rgba(0,0,0,0.35)}
+.card:hover::after{opacity:1}
+.card.main{border-color:rgba(29,158,117,0.22);background:rgba(29,158,117,0.04)}
+.ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.ig{background:rgba(29,158,117,0.14)}
+.ib{background:rgba(96,165,250,0.1)}
+.ia{background:rgba(245,158,11,0.1)}
+.ip{background:rgba(192,132,252,0.1)}
+.ir{background:rgba(248,113,113,0.1)}
+.it{background:rgba(45,212,191,0.1)}
+.ctop{display:flex;align-items:flex-start;gap:14px}
+.cn{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:5px;line-height:1.3}
+.cd{font-size:12px;color:rgba(255,255,255,0.42);line-height:1.6}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px}
+.tg{background:rgba(29,158,117,0.12);color:#1D9E75}
+.tb{background:rgba(96,165,250,0.1);color:#60A5FA}
+.ta{background:rgba(245,158,11,0.1);color:#F59E0B}
+.tp{background:rgba(192,132,252,0.1);color:#c084fc}
+.tw{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.45)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;background:#1D9E75;color:white;border:none;border-radius:10px;padding:12px 18px;font-size:12px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;width:100%;margin-top:4px;text-decoration:none}
+.btn:hover{background:#0F6E52;transform:translateY(-1px)}
+.btn.sec{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.7)}
+.btn.sec:hover{background:rgba(255,255,255,0.12);color:#fff}
+.footer{text-align:center;border-top:1px solid rgba(255,255,255,0.05);padding:36px 0 0}
+.flogo{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:#fff;margin-bottom:8px}
+.flogo em{color:#1D9E75;font-style:normal}
+.finfo{font-size:12px;color:rgba(255,255,255,0.3);line-height:1.8}
+.flegal{font-size:11px;color:rgba(255,255,255,0.18);max-width:640px;margin:12px auto 0;line-height:1.6}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid,.g2{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.cband{gap:14px;padding:12px 16px}}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="wrap">
+
+<div class="header">
+  <div class="badge"><div class="bdot"></div>Présentation confidentielle · AXA · Avril 2026</div>
+  <h1><em>Mon Assurance Scolaire</em><br>La RC scolaire 100% en ligne</h1>
+  <p class="hsub">Prototype complet — souscription en 3 minutes, attestation immédiate, dès 6,99€/an. Courtier ORIAS, conforme DDA/ACPR.</p>
+  <div class="cband">
+    <div class="ci"><div class="cid"></div>Matclo Assurance · Valbonne (06560)</div>
+    <div class="ci"><div class="cid"></div>ORIAS <strong>n° 14003416</strong></div>
+    <div class="ci"><div class="cid"></div><strong>04 83 32 28 70</strong></div>
+    <div class="ci"><div class="cid"></div>Contrôlé ACPR · Conforme DDA</div>
+    <div class="ci"><div class="cid"></div><span style="color:#FFD700;">★★★★☆</span> <strong>4,6/5</strong> · 107 avis Google</div>
+    <div class="ci"><div class="cid"></div>30 ans d'expertise · SIREN 800 790 917</div>
+  </div>
+  <div class="pdate">Préparé le 28 avril 2026 · Document confidentiel</div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="sv">12M</div><div class="sl">élèves assurables<br>en France</div></div>
+  <div class="stat"><div class="sv">200M€</div><div class="sl">marché annuel<br>assurance scolaire</div></div>
+  <div class="stat"><div class="sv">3 min</div><div class="sl">pour souscrire<br>100% en ligne</div></div>
+  <div class="stat"><div class="sv">6,99€</div><div class="sl">dès / an / enfant<br>sans franchise</div></div>
+  <div class="stat"><div class="sv">107</div><div class="sl">avis Google vérifiés<br>note 4,6 / 5</div></div>
+</div>
+
+<!-- SECTION 1 : SITE -->
+<div class="sh"><div class="shn">1</div><div class="shl">Site & Tunnel de souscription</div><div class="shline"></div></div>
+<div class="grid g1" style="margin-bottom:14px">
+  <div class="card main">
+    <div class="ctop">
+      <div class="ico ig">🌐</div>
+      <div>
+        <div class="cn">Site Mon-Assurance-Scolaire.fr — Complet</div>
+        <div class="cd">Site production-ready avec hero section, comparatif 3 formules, tunnel de souscription 4 étapes (formule → infos → paiement → attestation), FAQ 10 questions, module 8 villes SEO, section courtier ORIAS. 100% responsive mobile / tablette / desktop.</div>
+      </div>
+    </div>
+    <div class="tags">
+      <span class="tag tg">Tunnel PayZen intégré</span>
+      <span class="tag tg">Attestation immédiate</span>
+      <span class="tag tg">ORIAS 14003416</span>
+      <span class="tag tg">04 83 32 28 70</span>
+      <span class="tag tb">Schema.org 5 blocs JSON-LD</span>
+      <span class="tag tb">FAQPage featured snippets</span>
+      <span class="tag ta">Conforme DDA/ACPR</span>
+      <span class="tag ta">TSCA 9% affiché</span>
+      <span class="tag tw">Mobile-first</span>
+      <span class="tag tw">10 villes SEO</span>
+    </div>
+    <a class="btn" href="mon-assurance-scolaire-site.html" target="_blank">🌐 Ouvrir le site Mon Assurance Scolaire →</a>
+  </div>
+</div>
+
+<!-- SECTION 2 : BACK-OFFICE -->
+<div class="sh"><div class="shn">2</div><div class="shl">Back-office & Gestion financière</div><div class="shline"></div></div>
+<div class="grid g2" style="margin-bottom:14px">
+  <div class="card">
+    <div class="ctop">
+      <div class="ico ia">⚙️</div>
+      <div>
+        <div class="cn">Back-office Admin + Claude AI</div>
+        <div class="cd">Interface de gestion complète : dashboard souscriptions, blog SEO, pages géolocalisées. Chat Claude AI intégré pour modifier le site et générer du contenu en temps réel.</div>
+      </div>
+    </div>
+    <div class="tags">
+      <span class="tag ta">Claude AI intégré</span>
+      <span class="tag tg">Actions directes site</span>
+      <span class="tag tw">Blog SEO</span>
+      <span class="tag tw">Dashboard</span>
+    </div>
+    <a class="btn" href="mon-assurance-scolaire-admin.html" target="_blank">⚙️ Ouvrir le back-office →</a>
+  </div>
+  <div class="card">
+    <div class="ctop">
+      <div class="ico ib">💰</div>
+      <div>
+        <div class="cn">Bordereau de commissions mensuel</div>
+        <div class="cd">Décomposition complète : Prime HT / TSCA 9% (CGI art. 1001) / Commission courtier (20/25/30%) / Montant à reverser assureur. Export PDF + impression.</div>
+      </div>
+    </div>
+    <div class="tags">
+      <span class="tag tb">TSCA 9% — CGI art. 1001</span>
+      <span class="tag tg">Commission paramétrable</span>
+      <span class="tag tw">Export PDF</span>
+      <span class="tag tw">Pas de TVA assurance</span>
+    </div>
+    <a class="btn sec" href="mon-assurance-scolaire-bordereau.html" target="_blank">💰 Ouvrir le bordereau →</a>
+  </div>
+</div>
+
+<!-- SECTION 3 : SEO -->
+<div class="sh"><div class="shn">3</div><div class="shl">Stratégie SEO & Contenu</div><div class="shline"></div></div>
+<div class="grid g2" style="margin-bottom:14px">
+  <div class="card">
+    <div class="ctop">
+      <div class="ico ig">🎯</div>
+      <div>
+        <div class="cn">Générateur SEO — Intention d'achat</div>
+        <div class="cd">Génère des pages optimisées par requête ("assurance scolaire pas chère", "attestation immédiate"...) et géolocalisation. 3 modes : Intention / Géo / Combo. Aperçu temps réel + HTML source.</div>
+      </div>
+    </div>
+    <div class="tags">
+      <span class="tag tg">5 000–10 000 rech./mois</span>
+      <span class="tag tg">Pilier 1 Intention</span>
+      <span class="tag tb">Schema.org auto</span>
+      <span class="tag tw">Matrice 19 pages</span>
+    </div>
+    <a class="btn sec" href="mon-assurance-scolaire-seo.html" target="_blank">🎯 Ouvrir le générateur SEO →</a>
+  </div>
+  <div class="card">
+    <div class="ctop">
+      <div class="ico ip">📍</div>
+      <div>
+        <div class="cn">Pages SEO — 8 grandes villes</div>
+        <div class="cd">Marseille, Toulouse, Nice, Nantes, Bordeaux, Montpellier, Strasbourg, Lille. Données DEPP 2025 officielles, transports locaux, FAQ spécifique par ville.</div>
+      </div>
+    </div>
+    <div class="tags">
+      <span class="tag tp">8 villes couvertes</span>
+      <span class="tag tb">Données DEPP 2025</span>
+      <span class="tag tg">FAQ featured snippets</span>
+      <span class="tag tw">Maillage interne</span>
+    </div>
+    <a class="btn sec" href="mon-assurance-scolaire-villes.html" target="_blank">📍 Voir les pages villes →</a>
+  </div>
+</div>
+
+<!-- SECTION 4 : ARGUMENTS -->
+<div class="sh"><div class="shn">4</div><div class="shl">Pourquoi ce projet convaincra AXA</div><div class="shline"></div></div>
+<div class="grid" style="margin-bottom:48px">
+  <div class="card">
+    <div class="ctop"><div class="ico ig">🚀</div><div><div class="cn">Digital-first, coût minimal</div><div class="cd">Zéro agence physique. Souscription 100% en ligne via PayZen, attestation automatique. Coût de distribution très inférieur aux canaux traditionnels.</div></div></div>
+    <div class="tags"><span class="tag tg">3 min de souscription</span><span class="tag tw">Zéro papier</span><span class="tag tw">24h/24 7j/7</span></div>
+  </div>
+  <div class="card">
+    <div class="ctop"><div class="ico ib">📈</div><div><div class="cn">SEO comme moteur principal</div><div class="cd">5 000–10 000 recherches/mois sur les requêtes cibles. Pic août-septembre = 60-70% des recherches annuelles. Blog IA : 1 article/jour.</div></div></div>
+    <div class="tags"><span class="tag tb">SEO organique pur</span><span class="tag ta">Pic rentrée août-sept</span><span class="tag tw">1 article/jour IA</span></div>
+  </div>
+  <div class="card">
+    <div class="ctop"><div class="ico ia">🎯</div><div><div class="cn">2 000 contrats an 1 — réaliste</div><div class="cd">SEO + partenariats FCPE/écoles privées + SEA ponctuel rentrée. 12M élèves assurables. 0,02% du marché suffisent pour atteindre l'objectif AXA.</div></div></div>
+    <div class="tags"><span class="tag ta">2 000 contrats an 1</span><span class="tag tg">SEO + partenariats</span><span class="tag tw">0,02% du marché</span></div>
+  </div>
+  <div class="card">
+    <div class="ctop"><div class="ico it">🛡️</div><div><div class="cn">Conformité totale ORIAS/ACPR/DDA</div><div class="cd">IPID avant souscription, TSCA 9% intégrée, RGPD, art. L.113-8. Courtier physique identifiable (Valbonne) — E-E-A-T Google YMYL assurance.</div></div></div>
+    <div class="tags"><span class="tag tg">ORIAS 14003416</span><span class="tag tb">ACPR</span><span class="tag tg">DDA conforme</span><span class="tag tw">RGPD</span></div>
+  </div>
+  <div class="card">
+    <div class="ctop"><div class="ico ip">💰</div><div><div class="cn">Modèle financier transparent</div><div class="cd">Exemple Sérénité 9,99€ : HT 9,17€ · TSCA 0,83€ · Commission 2,29€ · Reversement 7,70€. Bordereau mensuel automatisé.</div></div></div>
+    <div class="tags"><span class="tag tp">Commission 25% HT</span><span class="tag tb">TSCA 9% intégrée</span><span class="tag tw">Bordereau auto</span></div>
+  </div>
+  <div class="card">
+    <div class="ctop"><div class="ico ir">⚡</div><div><div class="cn">Prêt à déployer</div><div class="cd">Site production-ready, back-office opérationnel, SEO structuré. Il manque : domaine, hébergement, contrat VADS PayZen et accord assureur.</div></div></div>
+    <div class="tags"><span class="tag tg">Production-ready</span><span class="tag ta">Domaine à enregistrer</span><span class="tag tw">PayZen VADS à signer</span></div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="flogo">Mon <em>Assurance Scolaire</em></div>
+  <div class="finfo">Matclo Assurance · 473 route des Dolines · 06560 Valbonne<br>ORIAS n° 14003416 · 04 83 32 28 70 · contact@mon-assurance-scolaire.fr</div>
+  <div class="flegal">Courtier en assurances enregistré à l'ORIAS sous le n° 14003416 (www.orias.fr). Soumis au contrôle de l'ACPR — 4 place de Budapest, 75009 Paris. Document confidentiel préparé à l'attention d'AXA · Avril 2026.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Assurance Scolaire — Pages SEO locales (8 villes)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f7f8fa; color: #0B1F3A; }
+
+  /* ── Navigation ville ── */
+  .ville-nav { background: #0B1F3A; padding: 16px 40px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .ville-nav a { color: rgba(255,255,255,0.6); font-size: 13px; text-decoration: none; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); }
+  .ville-nav a.active { background: #1D9E75; color: white; border-color: #1D9E75; }
+  .ville-nav a:hover { color: white; border-color: rgba(255,255,255,0.4); }
+  .ville-nav-label { color: rgba(255,255,255,0.35); font-size: 12px; margin-right: 6px; }
+
+  /* ── Page ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── Nav principale ── */
+  .nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; background: #EAF4F1; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .logo { font-size: 20px; font-weight: 500; color: #0B1F3A; display: flex; align-items: center; gap: 8px; }
+  .logo-mark { width: 28px; height: 28px; border-radius: 8px; background: #1D9E75; display: flex; align-items: center; justify-content: center; }
+  .nav-cta { background: #0B1F3A; color: #fff; border: none; padding: 9px 22px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
+
+  /* ── Hero ── */
+  .hero-local { background: linear-gradient(135deg, #DFF2EC 0%, #EBF5FF 100%); padding: 52px 40px 44px; }
+  .breadcrumb { font-size: 12px; color: #7a95a5; margin-bottom: 14px; }
+  .breadcrumb span { color: #1D9E75; }
+  .hero-local h1 { font-size: 32px; font-weight: 500; color: #0B1F3A; line-height: 1.2; margin-bottom: 12px; max-width: 680px; }
+  .hero-local h1 em { color: #1D9E75; font-style: normal; }
+  .hero-local .intro { font-size: 15px; color: #4a6070; line-height: 1.7; max-width: 620px; margin-bottom: 28px; }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+  .btn-main { background: #1D9E75; color: white; border: none; padding: 13px 26px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .btn-ghost { background: transparent; color: #0B1F3A; border: 1px solid rgba(11,31,58,0.25); padding: 13px 26px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+  .stats-local { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .stat-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; }
+  .stat-val { font-size: 20px; font-weight: 500; color: #1D9E75; }
+  .stat-label { font-size: 11px; color: #6b7280; margin-top: 3px; line-height: 1.4; }
+
+  /* ── Contenu ── */
+  .content-wrap { display: grid; grid-template-columns: 1fr 280px; gap: 28px; padding: 36px 40px; max-width: 1040px; margin: 0 auto; align-items: start; }
+  .article h2 { font-size: 20px; font-weight: 500; color: #0B1F3A; margin: 28px 0 10px; }
+  .article h2:first-child { margin-top: 0; }
+  .article h3 { font-size: 15px; font-weight: 500; color: #0B1F3A; margin: 16px 0 6px; }
+  .article p { font-size: 14px; color: #4a6070; line-height: 1.8; margin-bottom: 10px; }
+  .article strong { color: #0B1F3A; }
+  .highlight-box { background: #f0fdf8; border-left: 3px solid #1D9E75; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; }
+  .highlight-box p { margin: 0; font-size: 13px; color: #4a6070; line-height: 1.7; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+  .info-card { background: white; border: 1px solid #e8eaf0; border-radius: 10px; padding: 12px 14px; }
+  .info-card-title { font-size: 11px; font-weight: 500; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+  .info-card-val { font-size: 13px; color: #0B1F3A; line-height: 1.4; }
+
+  /* ── Table formules ── */
+  .formules-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 12px; }
+  .formules-table th { background: #0B1F3A; color: white; padding: 10px 14px; text-align: left; font-weight: 500; }
+  .formules-table th:first-child { border-radius: 8px 0 0 0; }
+  .formules-table th:last-child { border-radius: 0 8px 0 0; }
+  .formules-table td { padding: 9px 14px; border-bottom: 1px solid #f0f4f8; color: #4a6070; }
+  .formules-table tr:last-child td { border-bottom: none; }
+  .formules-table tr:nth-child(even) td { background: #f9fafb; }
+  .check { color: #1D9E75; font-weight: 500; }
+  .cross { color: #cbd5e0; }
+  .prix-badge { background: #DFF2EC; color: #0F6E56; padding: 2px 8px; border-radius: 20px; font-weight: 500; font-size: 11px; white-space: nowrap; }
+  .recommended-col { background: #f0fdf8 !important; }
+
+  /* ── FAQ ── */
+  .faq-local { margin: 20px 0; }
+  .faq-local-item { border: 1px solid #e8eaf0; border-radius: 10px; margin-bottom: 7px; background: white; overflow: hidden; }
+  .faq-local-q { display: flex; justify-content: space-between; align-items: center; padding: 13px 16px; cursor: pointer; gap: 10px; }
+  .faq-local-q:hover { background: #f7f8fa; }
+  .faq-local-q span { font-size: 13px; font-weight: 500; color: #0B1F3A; flex: 1; line-height: 1.4; }
+  .faq-arrow { width: 20px; height: 20px; border-radius: 50%; background: #f0f4f8; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.2s; }
+  .faq-local-item.open .faq-arrow { transform: rotate(180deg); background: #DFF2EC; }
+  .faq-local-a { display: none; padding: 0 16px 12px; font-size: 13px; color: #4a6070; line-height: 1.7; border-top: 1px solid #f0f4f8; }
+  .faq-local-item.open .faq-local-a { display: block; padding-top: 10px; }
+
+  /* ── Tags quartiers ── */
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0; }
+  .tag { background: #f0f4f8; color: #4a6070; font-size: 11px; padding: 3px 9px; border-radius: 6px; }
+  .tag-transport { background: #EBF5FF; color: #185FA5; }
+
+  /* ── Villes grid ── */
+  .villes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 7px; margin: 14px 0; }
+  .ville-link { background: white; border: 1px solid #e8eaf0; border-radius: 8px; padding: 9px 12px; font-size: 12px; color: #1D9E75; text-align: center; cursor: pointer; }
+  .ville-link.active { background: #DFF2EC; border-color: #1D9E75; color: #0F6E56; font-weight: 500; }
+
+  /* ── Sidebar ── */
+  .sidebar { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .sidebar-card { background: white; border: 1px solid #e8eaf0; border-radius: 14px; padding: 20px; }
+  .sidebar-title { font-size: 13px; font-weight: 500; color: #0B1F3A; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #f0f4f8; }
+  .sidebar-formule { border: 1px solid #e8eaf0; border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+  .sidebar-formule.best { border-color: #1D9E75; background: #f0fdf8; }
+  .sidebar-formule-name { font-size: 12px; font-weight: 500; color: #0B1F3A; margin-bottom: 2px; display: flex; justify-content: space-between; align-items: center; }
+  .sidebar-formule-desc { font-size: 11px; color: #6b7280; }
+  .sidebar-prix { font-size: 15px; font-weight: 500; color: #1D9E75; }
+  .btn-sidebar { display: block; text-align: center; background: #1D9E75; color: white; border: none; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; width: 100%; margin-top: 14px; }
+  .trust-item-side { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #6b7280; margin-bottom: 7px; }
+  .trust-dot { width: 5px; height: 5px; border-radius: 50%; background: #1D9E75; flex-shrink: 0; }
+
+  /* ── CTA bande ── */
+  .cta-band { background: #0B1F3A; padding: 40px; text-align: center; }
+  .cta-band h2 { font-size: 22px; font-weight: 500; color: white; margin-bottom: 8px; }
+  .cta-band p { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 20px; }
+  .cta-band button { background: #1D9E75; color: white; border: none; padding: 13px 32px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .schema-note { font-size: 11px; color: #9ca3af; margin-top: 20px; padding-top: 14px; border-top: 1px solid #f0f4f8; line-height: 1.6; }
+
+  @media (max-width: 768px) {
+    .content-wrap { grid-template-columns: 1fr; }
+    .hero-local { padding: 36px 20px 32px; }
+    .nav, .ville-nav { padding: 14px 20px; }
+    .content-wrap { padding: 24px 20px; }
+    .cta-band { padding: 32px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation entre les villes -->
+<div class="ville-nav">
+  <span class="ville-nav-label">Villes :</span>
+  <a href="#" class="active" onclick="showPage('marseille',this)">Marseille 🌊</a>
+  <a href="#" onclick="showPage('toulouse',this)">Toulouse ✈️</a>
+  <a href="#" onclick="showPage('nice',this)">Nice 🌴</a>
+  <a href="#" onclick="showPage('nantes',this)">Nantes 🏰</a>
+  <a href="#" onclick="showPage('bordeaux',this)">Bordeaux 🍷</a>
+  <a href="#" onclick="showPage('montpellier',this)">Montpellier 🌞</a>
+  <a href="#" onclick="showPage('strasbourg',this)">Strasbourg 🥨</a>
+  <a href="#" onclick="showPage('lille',this)">Lille 🍺</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE MARSEILLE
+═══════════════════════════════════════════ -->
+<div class="page active" id="page-marseille">
+  <div class="nav">
+    <div class="logo"><div class="logo-mark"><svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white"/><path d="M5 8L7 10L11 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Mon Assurance Scolaire</div>
+    <button class="nav-cta">Je souscris →</button>
+  </div>
+  <div class="hero-local">
+    <div class="breadcrumb">Accueil › Assurance scolaire › <span>Marseille</span></div>
+    <h1>Assurance scolaire <em>Marseille</em> — RC enfant, RTM couvert, attestation immédiate</h1>
+    <p class="intro">Votre enfant est scolarisé à Marseille ou dans les Bouches-du-Rhône ? Souscrivez en 3 minutes. Attestation immédiate par email, valable dans tous les établissements, REP ou privé.</p>
+    <div class="hero-btns">
+      <button class="btn-main">Souscrire Mon Assurance Scolaire dès 6,99€ →</button>
+      <button class="btn-ghost">Voir les formules</button>
+    </div>
+    <div class="stats-local">
+      <div class="stat-card"><div class="stat-val">4,5 %</div><div class="stat-label">des élèves de France dans l'académie d'Aix-Marseille</div></div>
+      <div class="stat-card"><div class="stat-val">~540 000</div><div class="stat-label">élèves dans l'académie Aix-Marseille (1er et 2nd degrés)</div></div>
+      <div class="stat-card"><div class="stat-val">+20 %</div><div class="stat-label">d'élèves en REP/REP+ à Marseille vs moyenne nationale</div></div>
+      <div class="stat-card"><div class="stat-val">Dès 6,99€</div><div class="stat-label">par an et par enfant, sans franchise</div></div>
+    </div>
+  </div>
+  <div class="content-wrap">
+    <div class="article">
+      <h2>Assurance scolaire à Marseille : les spécificités de la 2e ville de France</h2>
+      <p>Marseille présente un paysage scolaire unique en France. La ville concentre une proportion particulièrement élevée d'établissements en <strong>Réseau d'Éducation Prioritaire (REP et REP+)</strong> — dans certains arrondissements du nord de la ville (13e, 14e, 15e, 16e), la quasi-totalité des écoles relèvent de l'éducation prioritaire. Cela ne change rien aux droits de vos enfants en matière d'assurance scolaire, mais cela renforce l'importance d'une couverture complète.</p>
+      <p>La mobilité scolaire à Marseille repose principalement sur le réseau <strong>RTM (Régie des Transports Métropolitains)</strong> : métro (lignes 1 et 2), tramway, bus et le réseau de navettes maritimes pour les habitants des calanques. Nos formules Sérénité et Intégrale couvrent votre enfant sur l'ensemble de ces trajets domicile-école.</p>
+      <div class="highlight-box"><p><strong>Particuliarité marseillaise :</strong> Les sorties scolaires à Marseille incluent souvent des activités maritimes (voile, kayak de mer, découverte des calanques). Ces activités extrascolaires facultatives nécessitent obligatoirement une attestation d'assurance. Notre formule Intégrale couvre ces activités sportives en milieu naturel.</p></div>
+      <div class="info-grid">
+        <div class="info-card"><div class="info-card-title">Réseau RTM</div><div class="info-card-val">Métro L1/L2, tramway T2/T3, bus, navettes maritimes — tous couverts</div></div>
+        <div class="info-card"><div class="info-card-title">Éducation prioritaire</div><div class="info-card-val">Forte proportion de REP/REP+ dans les quartiers nord et est</div></div>
+        <div class="info-card"><div class="info-card-title">Secteur privé</div><div class="info-card-val">Présence significative d'écoles catholiques dans les 6e, 7e, 8e arrondissements</div></div>
+        <div class="info-card"><div class="info-card-title">Activités nautiques</div><div class="info-card-val">Sorties mer fréquentes — formule Intégrale recommandée</div></div>
+      </div>
+      <h2>Les formules Mon Assurance Scolaire pour Marseille</h2>
+      <table class="formules-table">
+        <thead><tr><th>Garantie</th><th>Essentielle<br><small>6,99€/an</small></th><th class="recommended-col">Sérénité ★<br><small>9,99€/an</small></th><th>Intégrale<br><small>16,99€/an</small></th></tr></thead>
+        <tbody>
+          <tr><td>Garantie individuelle accident scolaire</td><td class="check">✓</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Responsabilité civile scolaire</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Trajet RTM (métro, tram, bus)</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Activités nautiques & sports nature</td><td class="cross">—</td><td class="cross recommended-col">—</td><td class="check">✓</td></tr>
+          <tr><td>Frais médicaux</td><td>5 000€</td><td class="recommended-col">10 000€</td><td>20 000€</td></tr>
+          <tr><td>Couverture 365j/an</td><td class="cross">—</td><td class="cross recommended-col">—</td><td class="check">✓</td></tr>
+          <tr><td><strong>Prix</strong></td><td><span class="prix-badge">6,99€</span></td><td class="recommended-col"><span class="prix-badge">9,99€</span></td><td><span class="prix-badge">16,99€</span></td></tr>
+        </tbody>
+      </table>
+      <div class="highlight-box"><p><strong>Conseil Marseille :</strong> La formule Sérénité convient parfaitement pour la majorité des familles marseillaises. Si votre enfant pratique de la voile, du football de plage ou des sports nautiques organisés par l'école ou un club, optez pour la formule Intégrale.</p></div>
+      <h2>Arrondissements couverts</h2>
+      <div class="tags">
+        <span class="tag">1er-2e</span><span class="tag">3e-4e</span><span class="tag">5e-6e</span><span class="tag">7e-8e</span><span class="tag">9e-10e</span><span class="tag">11e-12e</span><span class="tag">13e</span><span class="tag">14e</span><span class="tag">15e-16e</span><span class="tag">Aix-en-Provence</span><span class="tag">Aubagne</span><span class="tag">Martigues</span><span class="tag">Salon-de-Provence</span>
+      </div>
+      <h2>Questions fréquentes des parents marseillais</h2>
+      <div class="faq-local">
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant est dans une école REP+ — l'assurance fonctionne-t-elle pareil ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui, absolument. Mon Assurance Scolaire couvre votre enfant dans tous les types d'établissements : public ordinaire, REP, REP+, privé sous contrat ou hors contrat. Le classement de l'établissement n'a aucune incidence sur les garanties ou le tarif.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant prend le métro RTM seul — est-il couvert sur le trajet ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Nos formules Sérénité et Intégrale couvrent votre enfant sur l'ensemble du réseau RTM (métro lignes 1 et 2, tramway, bus) pour les trajets domicile-école. La couverture s'applique aller et retour.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>L'école organise une sortie aux calanques — mon enfant est-il assuré ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Toutes nos formules couvrent les sorties scolaires facultatives organisées par l'établissement, y compris les sorties nature et les excursions aux calanques. Une seule attestation Mon Assurance Scolaire suffit pour toute l'année scolaire.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant fait de la voile au club nautique le week-end — quelle formule choisir ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">La formule Intégrale à 16,99€/an est recommandée. Elle couvre les activités de loisirs et sportives en dehors du temps scolaire, 365 jours par an. Vérifiez que la voile de compétition n'est pas exclue dans les conditions générales.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant est scolarisé à Aix-en-Provence — Mon Assurance Scolaire couvre-t-il aussi l'académie d'Aix-Marseille ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Mon Assurance Scolaire couvre votre enfant dans l'ensemble de l'académie d'Aix-Marseille, incluant Aix-en-Provence, Aubagne, Salon-de-Provence, Martigues et toutes les communes des Bouches-du-Rhône et du Vaucluse.</div></div>
+      </div>
+      <h2>Assurance scolaire dans les autres villes</h2>
+      <div class="villes-grid">
+        <div class="ville-link" onclick="showPage('marseille',null)">Paris 🗼</div>
+        <div class="ville-link" onclick="showPage('marseille',null)">Lyon 🦁</div>
+        <div class="ville-link active">Marseille 🌊</div>
+        <div class="ville-link" onclick="showPage('toulouse',null)">Toulouse ✈️</div>
+        <div class="ville-link" onclick="showPage('nice',null)">Nice 🌴</div>
+        <div class="ville-link" onclick="showPage('nantes',null)">Nantes 🏰</div>
+        <div class="ville-link" onclick="showPage('bordeaux',null)">Bordeaux 🍷</div>
+        <div class="ville-link" onclick="showPage('montpellier',null)">Montpellier 🌞</div>
+        <div class="ville-link" onclick="showPage('strasbourg',null)">Strasbourg 🥨</div>
+        <div class="ville-link" onclick="showPage('lille',null)">Lille 🍺</div>
+      </div>
+      <p class="schema-note"><strong>Sources :</strong> Académie d'Aix-Marseille — DEPP, Éducation nationale en chiffres 2025 (académie Aix-Marseille : 4,5% des élèves de France) — RTM Marseille. Mon Assurance Scolaire est un courtier en assurance enregistré à l'ORIAS. Documents contractuels (IPID, CGA) accessibles avant souscription conformément à la réglementation DDA/ACPR.</p>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">Souscrire pour Marseille</div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Essentielle <span class="sidebar-prix">6,99€</span></div><div class="sidebar-formule-desc">Accident scolaire — sans RC</div></div>
+        <div class="sidebar-formule best"><div class="sidebar-formule-name">⭐ Sérénité <span class="sidebar-prix">9,99€</span></div><div class="sidebar-formule-desc">RC + trajet RTM couvert</div></div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Intégrale <span class="sidebar-prix">16,99€</span></div><div class="sidebar-formule-desc">365j/an + sports nautiques</div></div>
+        <button class="btn-sidebar">Je souscris en 3 min →</button>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Pourquoi Mon Assurance Scolaire ?</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Trajet RTM et bus couverts</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>REP, public & privé, tous arrondissements</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Attestation immédiate par email</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Sans franchise · Sans tacite reconduction</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Courtier certifié ORIAS & ACPR</div>
+      </div>
+    </div>
+  </div>
+  <div class="cta-band">
+    <h2>Assurez votre enfant marseillais en 3 minutes</h2>
+    <p>Trajet RTM couvert · Attestation immédiate · Dès 6,99€/an · Toutes les Bouches-du-Rhône</p>
+    <button>Souscrire Mon Assurance Scolaire maintenant →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE TOULOUSE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-toulouse">
+  <div class="nav">
+    <div class="logo"><div class="logo-mark"><svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white"/><path d="M5 8L7 10L11 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Mon Assurance Scolaire</div>
+    <button class="nav-cta">Je souscris →</button>
+  </div>
+  <div class="hero-local">
+    <div class="breadcrumb">Accueil › Assurance scolaire › <span>Toulouse</span></div>
+    <h1>Assurance scolaire <em>Toulouse</em> — RC enfant, Tisséo couvert, attestation immédiate</h1>
+    <p class="intro">Toulouse, ville la plus jeune de France. Votre enfant est scolarisé dans la Ville Rose ? Souscrivez Mon Assurance Scolaire en 3 minutes, attestation immédiate par email.</p>
+    <div class="hero-btns">
+      <button class="btn-main">Souscrire Mon Assurance Scolaire dès 6,99€ →</button>
+      <button class="btn-ghost">Voir les formules</button>
+    </div>
+    <div class="stats-local">
+      <div class="stat-card"><div class="stat-val">4,2 %</div><div class="stat-label">des élèves de France dans l'académie de Toulouse</div></div>
+      <div class="stat-card"><div class="stat-val">N°1</div><div class="stat-label">ville la plus jeune de France par la proportion de moins de 20 ans</div></div>
+      <div class="stat-card"><div class="stat-val">+12 ETP</div><div class="stat-label">postes créés en 2nd degré rentrée 2025 — démographie en hausse</div></div>
+      <div class="stat-card"><div class="stat-val">Dès 6,99€</div><div class="stat-label">par an et par enfant, sans franchise</div></div>
+    </div>
+  </div>
+  <div class="content-wrap">
+    <div class="article">
+      <h2>Toulouse, la ville la plus jeune de France : pourquoi l'assurance scolaire y est cruciale</h2>
+      <p>Toulouse est statistiquement la <strong>ville la plus jeune de France</strong> par la proportion de jeunes de moins de 20 ans dans sa population. Cette démographie exceptionnelle s'explique par la présence de l'industrie aéronautique et spatiale (Airbus, Safran, Thales) qui attire des familles d'ingénieurs et de cadres avec enfants en bas âge. Résultat : les écoles toulousaines sont parmi les plus dynamiques du pays, avec des effectifs qui résistaient mieux à la baisse nationale.</p>
+      <p>La Haute-Garonne, département chef-lieu, est d'ailleurs le seul département de l'académie à connaître une <strong>démographie scolaire en légère hausse</strong> à la rentrée 2025 — ce qui explique la création de 12 postes supplémentaires dans le second degré. Le réseau de transports <strong>Tisséo</strong> (métro lignes A et B, tramway, bus) dessert l'ensemble de la métropole toulousaine pour les trajets scolaires.</p>
+      <div class="highlight-box"><p><strong>Spécificité toulousaine :</strong> L'académie de Toulouse est en <strong>zone C</strong> du calendrier scolaire (comme Paris), ce qui signifie que les vacances scolaires ne coïncident pas avec celles des autres académies. Pensez à souscrire avant la rentrée pour être couvert dès le premier jour.</p></div>
+      <div class="info-grid">
+        <div class="info-card"><div class="info-card-title">Zone scolaire</div><div class="info-card-val">Zone C — mêmes vacances que Paris et Montpellier</div></div>
+        <div class="info-card"><div class="info-card-title">Réseau Tisséo</div><div class="info-card-val">Métro A et B, tramway T1/T2, bus — trajets couverts</div></div>
+        <div class="info-card"><div class="info-card-title">Industrie aéro</div><div class="info-card-val">Forte proportion de familles d'ingénieurs, établissements bilingues en hausse</div></div>
+        <div class="info-card"><div class="info-card-title">Vélo</div><div class="info-card-val">VélôToulouse et pistes cyclables — trajet vélo couvert</div></div>
+      </div>
+      <h2>Les formules Mon Assurance Scolaire pour Toulouse</h2>
+      <table class="formules-table">
+        <thead><tr><th>Garantie</th><th>Essentielle<br><small>6,99€/an</small></th><th class="recommended-col">Sérénité ★<br><small>9,99€/an</small></th><th>Intégrale<br><small>16,99€/an</small></th></tr></thead>
+        <tbody>
+          <tr><td>Garantie individuelle accident scolaire</td><td class="check">✓</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Responsabilité civile scolaire</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Trajet Tisséo (métro, tram, bus)</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Trajet à vélo (VélôToulouse)</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Sport en club, loisirs 365j/an</td><td class="cross">—</td><td class="cross recommended-col">—</td><td class="check">✓</td></tr>
+          <tr><td>Frais médicaux</td><td>5 000€</td><td class="recommended-col">10 000€</td><td>20 000€</td></tr>
+          <tr><td><strong>Prix</strong></td><td><span class="prix-badge">6,99€</span></td><td class="recommended-col"><span class="prix-badge">9,99€</span></td><td><span class="prix-badge">16,99€</span></td></tr>
+        </tbody>
+      </table>
+      <h2>Communes et quartiers couverts</h2>
+      <div class="tags">
+        <span class="tag">Toulouse centre</span><span class="tag">Blagnac</span><span class="tag">Colomiers</span><span class="tag">Tournefeuille</span><span class="tag">Balma</span><span class="tag">Labège</span><span class="tag">Muret</span><span class="tag">Ramonville</span><span class="tag">L'Union</span><span class="tag">Léguevin</span><span class="tag">Cugnaux</span>
+      </div>
+      <h2>Questions fréquentes des parents toulousains</h2>
+      <div class="faq-local">
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>L'académie de Toulouse est en zone C — cela change-t-il les dates de ma couverture ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Non. Mon Assurance Scolaire couvre votre enfant sur l'année scolaire complète, quelle que soit la zone (A, B ou C). La date de début de couverture est celle que vous choisissez lors de la souscription. Souscrivez avant le 1er septembre pour être couvert dès la rentrée.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant prend le métro Tisséo ligne A seul jusqu'à son lycée — est-il couvert ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Nos formules Sérénité et Intégrale couvrent votre enfant sur tout le réseau Tisséo (métro A et B, tramway T1 et T2, bus) pour les trajets domicile-école, aller et retour, y compris les correspondances.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant est scolarisé à Blagnac ou Colomiers — suis-je couvert hors de Toulouse ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Mon Assurance Scolaire couvre votre enfant dans toute la métropole toulousaine et l'ensemble de l'académie de Toulouse (Haute-Garonne, Ariège, Aveyron, Gers, Lot, Hautes-Pyrénées, Tarn, Tarn-et-Garonne).</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant fait du rugby ou du football en club à Toulouse — quelle formule ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Toulouse étant une grande ville de rugby et de sport collectif, nous recommandons la formule Intégrale à 16,99€/an. Elle couvre votre enfant 365j/an lors de ses entraînements et matchs en dehors de l'école.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>L'école de mon enfant est bilingue anglais — l'assurance scolaire s'applique-t-elle pareil ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui, absolument. Le type de pédagogie ou de programme (bilingue, Montessori, international, etc.) n'a aucune incidence sur les garanties. Mon Assurance Scolaire couvre votre enfant dans tous les établissements reconnus par l'Éducation nationale.</div></div>
+      </div>
+      <h2>Assurance scolaire dans les autres villes</h2>
+      <div class="villes-grid">
+        <div class="ville-link">Paris 🗼</div><div class="ville-link">Lyon 🦁</div><div class="ville-link" onclick="showPage('marseille',null)">Marseille 🌊</div>
+        <div class="ville-link active">Toulouse ✈️</div><div class="ville-link" onclick="showPage('nice',null)">Nice 🌴</div><div class="ville-link" onclick="showPage('nantes',null)">Nantes 🏰</div>
+        <div class="ville-link" onclick="showPage('bordeaux',null)">Bordeaux 🍷</div><div class="ville-link" onclick="showPage('montpellier',null)">Montpellier 🌞</div><div class="ville-link" onclick="showPage('strasbourg',null)">Strasbourg 🥨</div><div class="ville-link" onclick="showPage('lille',null)">Lille 🍺</div>
+      </div>
+      <p class="schema-note"><strong>Sources :</strong> Académie de Toulouse, rentrée 2025 — DEPP 2025 (Toulouse : 4,2% des élèves de France) — Tisséo Collectivités — Mairie de Toulouse. Mon Assurance Scolaire est un courtier enregistré à l'ORIAS, soumis au contrôle de l'ACPR.</p>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">Souscrire pour Toulouse</div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Essentielle <span class="sidebar-prix">6,99€</span></div><div class="sidebar-formule-desc">Accident scolaire — sans RC</div></div>
+        <div class="sidebar-formule best"><div class="sidebar-formule-name">⭐ Sérénité <span class="sidebar-prix">9,99€</span></div><div class="sidebar-formule-desc">RC + trajet Tisséo couvert</div></div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Intégrale <span class="sidebar-prix">16,99€</span></div><div class="sidebar-formule-desc">365j/an + sport en club</div></div>
+        <button class="btn-sidebar">Je souscris en 3 min →</button>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Pourquoi Mon Assurance Scolaire ?</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Trajet Tisséo et vélo couverts</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Zone C — couverture dès la rentrée</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Attestation immédiate par email</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Courtier certifié ORIAS & ACPR</div>
+      </div>
+    </div>
+  </div>
+  <div class="cta-band">
+    <h2>Assurez votre enfant toulousain en 3 minutes</h2>
+    <p>Tisséo couvert · Zone C · Attestation immédiate · Dès 6,99€/an · Toute la Haute-Garonne</p>
+    <button>Souscrire Mon Assurance Scolaire maintenant →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE NICE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-nice">
+  <div class="nav">
+    <div class="logo"><div class="logo-mark"><svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white"/><path d="M5 8L7 10L11 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Mon Assurance Scolaire</div>
+    <button class="nav-cta">Je souscris →</button>
+  </div>
+  <div class="hero-local">
+    <div class="breadcrumb">Accueil › Assurance scolaire › <span>Nice</span></div>
+    <h1>Assurance scolaire <em>Nice</em> — RC enfant, Lignes d'Azur, attestation immédiate</h1>
+    <p class="intro">Nice et les Alpes-Maritimes : une académie qui résiste à la baisse des effectifs (+0,3% en 2025). Souscrivez Mon Assurance Scolaire en 3 minutes pour protéger votre enfant sur la Côte d'Azur.</p>
+    <div class="hero-btns">
+      <button class="btn-main">Souscrire Mon Assurance Scolaire dès 6,99€ →</button>
+      <button class="btn-ghost">Voir les formules</button>
+    </div>
+    <div class="stats-local">
+      <div class="stat-card"><div class="stat-val">3,1 %</div><div class="stat-label">des élèves de France dans l'académie de Nice</div></div>
+      <div class="stat-card"><div class="stat-val">+0,3 %</div><div class="stat-label">hausse des effectifs à Nice en 2025 — contre -0,9% à Paris</div></div>
+      <div class="stat-card"><div class="stat-val">~40</div><div class="stat-label">établissements bilingues ou internationaux dans l'académie</div></div>
+      <div class="stat-card"><div class="stat-val">Dès 6,99€</div><div class="stat-label">par an et par enfant, sans franchise</div></div>
+    </div>
+  </div>
+  <div class="content-wrap">
+    <div class="article">
+      <h2>Assurance scolaire à Nice : proximité italienne et spécificités azuréennes</h2>
+      <p>L'académie de Nice est l'une des rares à <strong>résister à la baisse démographique nationale</strong> avec une légère hausse de +0,3% des effectifs à la rentrée 2025. Cette particularité s'explique par l'attractivité continue de la Côte d'Azur et l'arrivée de familles européennes, notamment italiennes, monégasques et anglaises.</p>
+      <p>Nice se distingue par une forte présence d'<strong>établissements bilingues et internationaux</strong> — sections européennes, lycées internationaux, établissements franco-italiens — qui attirent des familles expat. Le réseau <strong>Lignes d'Azur</strong> (tramway T1 et T2, bus urbains) couvre les trajets scolaires dans la Métropole Nice Côte d'Azur, nos formules couvrent l'ensemble de ce réseau.</p>
+      <div class="highlight-box"><p><strong>Proximité Monaco :</strong> Certains enfants résidant à Beausoleil, Roquebrune ou Cap-d'Ail sont scolarisés à Nice ou dans des établissements de la zone frontalière. Mon Assurance Scolaire couvre votre enfant dans tous les établissements de l'académie de Nice, y compris les communes limitrophes de Monaco.</p></div>
+      <div class="info-grid">
+        <div class="info-card"><div class="info-card-title">Réseau Lignes d'Azur</div><div class="info-card-val">Tramway T1/T2, bus urbains Nice — trajets scolaires couverts</div></div>
+        <div class="info-card"><div class="info-card-title">Établissements intl.</div><div class="info-card-val">Sections européennes, lycées franco-italiens — tous couverts</div></div>
+        <div class="info-card"><div class="info-card-title">Activités montagne</div><div class="info-card-val">Ski, randonnée alpine — formule Intégrale recommandée</div></div>
+        <div class="info-card"><div class="info-card-title">Effectifs</div><div class="info-card-val">+0,3% en 2025, l'une des académies qui résistent à la baisse nationale</div></div>
+      </div>
+      <h2>Les formules Mon Assurance Scolaire pour Nice</h2>
+      <table class="formules-table">
+        <thead><tr><th>Garantie</th><th>Essentielle<br><small>6,99€/an</small></th><th class="recommended-col">Sérénité ★<br><small>9,99€/an</small></th><th>Intégrale<br><small>16,99€/an</small></th></tr></thead>
+        <tbody>
+          <tr><td>Garantie individuelle accident scolaire</td><td class="check">✓</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Responsabilité civile scolaire</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Trajet Lignes d'Azur (tram, bus)</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Ski & sports de montagne</td><td class="cross">—</td><td class="cross recommended-col">—</td><td class="check">✓</td></tr>
+          <tr><td>Activités nautiques & mer</td><td class="cross">—</td><td class="cross recommended-col">—</td><td class="check">✓</td></tr>
+          <tr><td>Frais médicaux</td><td>5 000€</td><td class="recommended-col">10 000€</td><td>20 000€</td></tr>
+          <tr><td><strong>Prix</strong></td><td><span class="prix-badge">6,99€</span></td><td class="recommended-col"><span class="prix-badge">9,99€</span></td><td><span class="prix-badge">16,99€</span></td></tr>
+        </tbody>
+      </table>
+      <div class="highlight-box"><p><strong>Conseil Nice :</strong> La formule Intégrale est particulièrement adaptée aux familles niçoises : elle couvre à la fois les activités nautiques en été (plongée, voile, kayak) et les sports d'hiver en montagne (ski à Isola 2000, Auron...) que pratiquent souvent les enfants de la région.</p></div>
+      <h2>Communes des Alpes-Maritimes couvertes</h2>
+      <div class="tags">
+        <span class="tag">Nice</span><span class="tag">Antibes</span><span class="tag">Cannes</span><span class="tag">Grasse</span><span class="tag">Menton</span><span class="tag">Valbonne</span><span class="tag">Sophia Antipolis</span><span class="tag">Cagnes-sur-Mer</span><span class="tag">Mougins</span><span class="tag">Roquebrune-Cap-Martin</span><span class="tag">Beausoleil</span><span class="tag">Mandelieu</span>
+      </div>
+      <h2>Questions fréquentes des parents niçois</h2>
+      <div class="faq-local">
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant est dans une section européenne ou bilingue — l'assurance est-elle différente ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Non, les garanties sont identiques. Mon Assurance Scolaire couvre votre enfant dans toutes les sections d'établissement, qu'il s'agisse d'une section européenne, bilingue, internationale ou d'un lycée franco-étranger. Le programme pédagogique n'a aucune incidence sur la couverture.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant fait du ski à Isola 2000 ou Auron avec l'école — est-il assuré ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Pour les classes de neige organisées par l'école, toutes nos formules couvrent ces sorties scolaires facultatives. Pour le ski en famille ou en club le week-end, la formule Intégrale est nécessaire car elle couvre les activités extrascolaires 365j/an.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Nous habitons à Valbonne / Sophia Antipolis — Mon Assurance Scolaire couvre-t-il notre commune ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Mon Assurance Scolaire couvre l'ensemble des Alpes-Maritimes, dont Valbonne, Sophia Antipolis, Antibes, Cannes, Grasse et toutes les communes de l'académie de Nice. C'est d'ailleurs depuis Valbonne que notre cabinet de courtage est basé.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant prend le tramway T1 pour aller au lycée — est-il couvert ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Nos formules Sérénité et Intégrale couvrent votre enfant sur l'ensemble du réseau Lignes d'Azur (tramway T1 Jean Médecin et T2 Est-Ouest, bus urbains), pour les trajets domicile-école aller et retour.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant suit des cours de plongée avec son lycée maritime — est-ce couvert ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Si la plongée est organisée par l'établissement dans le cadre scolaire, toutes nos formules couvrent cette activité. Pour la plongée en loisir hors temps scolaire, la formule Intégrale est nécessaire. Consultez les conditions générales pour les sports sous-marins spécifiques.</div></div>
+      </div>
+      <h2>Assurance scolaire dans les autres villes</h2>
+      <div class="villes-grid">
+        <div class="ville-link">Paris 🗼</div><div class="ville-link">Lyon 🦁</div><div class="ville-link" onclick="showPage('marseille',null)">Marseille 🌊</div>
+        <div class="ville-link" onclick="showPage('toulouse',null)">Toulouse ✈️</div><div class="ville-link active">Nice 🌴</div><div class="ville-link" onclick="showPage('nantes',null)">Nantes 🏰</div>
+        <div class="ville-link" onclick="showPage('bordeaux',null)">Bordeaux 🍷</div><div class="ville-link" onclick="showPage('montpellier',null)">Montpellier 🌞</div><div class="ville-link" onclick="showPage('strasbourg',null)">Strasbourg 🥨</div><div class="ville-link" onclick="showPage('lille',null)">Lille 🍺</div>
+      </div>
+      <p class="schema-note"><strong>Sources :</strong> Académie de Nice, rentrée 2025 (+0,3% d'effectifs) — DEPP 2025 (Nice : 3,1% des élèves de France) — Lignes d'Azur / Métropole Nice Côte d'Azur. Mon Assurance Scolaire, courtier basé à Valbonne, enregistré à l'ORIAS, soumis au contrôle de l'ACPR.</p>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">Souscrire pour Nice</div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Essentielle <span class="sidebar-prix">6,99€</span></div><div class="sidebar-formule-desc">Accident scolaire — sans RC</div></div>
+        <div class="sidebar-formule best"><div class="sidebar-formule-name">⭐ Sérénité <span class="sidebar-prix">9,99€</span></div><div class="sidebar-formule-desc">RC + trajet Lignes d'Azur</div></div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Intégrale <span class="sidebar-prix">16,99€</span></div><div class="sidebar-formule-desc">365j/an + ski + activités mer</div></div>
+        <button class="btn-sidebar">Je souscris en 3 min →</button>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Mon Assurance Scolaire — basé à Valbonne</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Courtier local, rayonnement national</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Lignes d'Azur et bus couverts</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Alpes-Maritimes entières couvertes</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Attestation immédiate par email</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Certifié ORIAS & ACPR</div>
+      </div>
+    </div>
+  </div>
+  <div class="cta-band">
+    <h2>Assurez votre enfant niçois en 3 minutes</h2>
+    <p>Courtier local basé à Valbonne · Côte d'Azur · Attestation immédiate · Dès 6,99€/an</p>
+    <button>Souscrire Mon Assurance Scolaire maintenant →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE NANTES
+═══════════════════════════════════════════ -->
+<div class="page" id="page-nantes">
+  <div class="nav">
+    <div class="logo"><div class="logo-mark"><svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white"/><path d="M5 8L7 10L11 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Mon Assurance Scolaire</div>
+    <button class="nav-cta">Je souscris →</button>
+  </div>
+  <div class="hero-local">
+    <div class="breadcrumb">Accueil › Assurance scolaire › <span>Nantes</span></div>
+    <h1>Assurance scolaire <em>Nantes</em> — RC enfant, TAN couvert, attestation immédiate</h1>
+    <p class="intro">Nantes, 6e ville de France et championne de la qualité de vie. 5,7% des élèves français sont dans l'académie de Nantes. Souscrivez Mon Assurance Scolaire en 3 minutes.</p>
+    <div class="hero-btns">
+      <button class="btn-main">Souscrire Mon Assurance Scolaire dès 6,99€ →</button>
+      <button class="btn-ghost">Voir les formules</button>
+    </div>
+    <div class="stats-local">
+      <div class="stat-card"><div class="stat-val">5,7 %</div><div class="stat-label">des élèves de France dans l'académie de Nantes — 4e académie de France</div></div>
+      <div class="stat-card"><div class="stat-val">~683 000</div><div class="stat-label">élèves dans l'académie de Nantes (Pays de la Loire)</div></div>
+      <div class="stat-card"><div class="stat-val">N°1</div><div class="stat-label">ville de France pour la qualité de vie selon plusieurs classements</div></div>
+      <div class="stat-card"><div class="stat-val">Dès 6,99€</div><div class="stat-label">par an et par enfant, sans franchise</div></div>
+    </div>
+  </div>
+  <div class="content-wrap">
+    <div class="article">
+      <h2>Nantes, ville verte et dynamique : l'assurance scolaire adaptée aux familles nantaises</h2>
+      <p>Nantes est la <strong>4e académie de France par le nombre d'élèves</strong> avec 5,7% des effectifs nationaux, soit environ 683 000 élèves dans toute la région Pays de la Loire. La ville est réputée pour son dynamisme démographique et sa qualité de vie, attirant chaque année de nombreuses jeunes familles.</p>
+      <p>La mobilité à Nantes est exemplaire en France : le réseau <strong>TAN (Transports de l'Agglomération Nantaise)</strong> inclut 3 lignes de tramway, plusieurs lignes de Busway (bus à haut niveau de service) et un réseau de pistes cyclables dense. Nantes est régulièrement classée parmi les villes les plus cyclables de France — de nombreux enfants s'y rendent à l'école à vélo, ce que nos formules couvrent explicitement.</p>
+      <div class="highlight-box"><p><strong>Spécificité nantaise :</strong> La Loire-Atlantique est en <strong>zone B</strong> du calendrier scolaire. Cela signifie des vacances décalées par rapport à Paris (zone C) et à Lyon (zone A), ce qui est un avantage pour éviter les pics touristiques — et pour la souscription de votre assurance, cela n'a aucune incidence : Mon Assurance Scolaire couvre votre enfant dès la date de rentrée.</p></div>
+      <div class="info-grid">
+        <div class="info-card"><div class="info-card-title">Réseau TAN</div><div class="info-card-val">3 lignes de tramway, Busway, bus — tous trajets couverts</div></div>
+        <div class="info-card"><div class="info-card-title">Mobilité douce</div><div class="info-card-val">Pistes cyclables, Vélocité — trajets vélo couverts par Mon Assurance Scolaire</div></div>
+        <div class="info-card"><div class="info-card-title">Zone scolaire</div><div class="info-card-val">Zone B — mêmes vacances que Rennes, Strasbourg, Lille</div></div>
+        <div class="info-card"><div class="info-card-title">4e académie</div><div class="info-card-val">5,7% des élèves de France dans les Pays de la Loire</div></div>
+      </div>
+      <h2>Les formules Mon Assurance Scolaire pour Nantes</h2>
+      <table class="formules-table">
+        <thead><tr><th>Garantie</th><th>Essentielle<br><small>6,99€/an</small></th><th class="recommended-col">Sérénité ★<br><small>9,99€/an</small></th><th>Intégrale<br><small>16,99€/an</small></th></tr></thead>
+        <tbody>
+          <tr><td>Garantie individuelle accident scolaire</td><td class="check">✓</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Responsabilité civile scolaire</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Trajet TAN (tram, Busway, bus)</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Trajet à vélo (pistes cyclables)</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Activités nautiques (estuaire de la Loire)</td><td class="cross">—</td><td class="cross recommended-col">—</td><td class="check">✓</td></tr>
+          <tr><td>Couverture 365j/an</td><td class="cross">—</td><td class="cross recommended-col">—</td><td class="check">✓</td></tr>
+          <tr><td><strong>Prix</strong></td><td><span class="prix-badge">6,99€</span></td><td class="recommended-col"><span class="prix-badge">9,99€</span></td><td><span class="prix-badge">16,99€</span></td></tr>
+        </tbody>
+      </table>
+      <h2>Communes de la Métropole couvertes</h2>
+      <div class="tags">
+        <span class="tag">Nantes</span><span class="tag">Saint-Herblain</span><span class="tag">Rezé</span><span class="tag">Orvault</span><span class="tag">Saint-Sébastien</span><span class="tag">Vertou</span><span class="tag">Bouguenais</span><span class="tag">Carquefou</span><span class="tag">Sainte-Luce</span><span class="tag">La Chapelle</span><span class="tag">Couëron</span>
+      </div>
+      <h2>Questions fréquentes des parents nantais</h2>
+      <div class="faq-local">
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant va à l'école à vélo tous les jours — est-il couvert par Mon Assurance Scolaire ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Nantes étant l'une des villes les plus cyclables de France, nous couvrons explicitement le trajet à vélo dans nos formules Sérénité et Intégrale. En cas d'accident à vélo sur le chemin de l'école, la garantie individuelle accident et la RC s'appliquent pleinement.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant prend le tramway TAN ligne 1 pour aller au collège — couvert ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Nos formules Sérénité et Intégrale couvrent votre enfant sur tout le réseau TAN : tramway (lignes 1, 2, 3), Busway et bus urbains, pour les trajets domicile-école aller et retour.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant est scolarisé à Saint-Herblain ou Rezé — la couverture s'étend-elle à la métropole ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Mon Assurance Scolaire couvre votre enfant dans toute la Métropole de Nantes et dans l'ensemble de l'académie de Nantes (Loire-Atlantique, Maine-et-Loire, Mayenne, Sarthe, Vendée).</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>L'école organise une sortie à l'estuaire de la Loire ou au bord de mer — couvert ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui pour toutes les sorties scolaires organisées par l'établissement. Pour les activités nautiques pratiquées en dehors du temps scolaire (voile, kayak...), la formule Intégrale est nécessaire.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Nantes est en zone B — mes dates de couverture sont-elles différentes des enfants en zone A ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Non. Mon Assurance Scolaire couvre votre enfant sur l'ensemble de l'année scolaire de votre académie, quel que soit son zonage (A, B ou C). Vous choisissez la date de début lors de la souscription — généralement le 1er septembre de la rentrée.</div></div>
+      </div>
+      <h2>Assurance scolaire dans les autres villes</h2>
+      <div class="villes-grid">
+        <div class="ville-link">Paris 🗼</div><div class="ville-link">Lyon 🦁</div><div class="ville-link" onclick="showPage('marseille',null)">Marseille 🌊</div>
+        <div class="ville-link" onclick="showPage('toulouse',null)">Toulouse ✈️</div><div class="ville-link" onclick="showPage('nice',null)">Nice 🌴</div><div class="ville-link active">Nantes 🏰</div>
+        <div class="ville-link" onclick="showPage('bordeaux',null)">Bordeaux 🍷</div><div class="ville-link" onclick="showPage('montpellier',null)">Montpellier 🌞</div><div class="ville-link" onclick="showPage('strasbourg',null)">Strasbourg 🥨</div><div class="ville-link" onclick="showPage('lille',null)">Lille 🍺</div>
+      </div>
+      <p class="schema-note"><strong>Sources :</strong> DEPP 2025 (Nantes : 5,7% des élèves de France) — TAN Nantes Métropole — Académie de Nantes. Mon Assurance Scolaire est un courtier en assurance enregistré à l'ORIAS, soumis au contrôle de l'ACPR.</p>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">Souscrire pour Nantes</div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Essentielle <span class="sidebar-prix">6,99€</span></div><div class="sidebar-formule-desc">Accident scolaire — sans RC</div></div>
+        <div class="sidebar-formule best"><div class="sidebar-formule-name">⭐ Sérénité <span class="sidebar-prix">9,99€</span></div><div class="sidebar-formule-desc">RC + tram TAN + vélo couverts</div></div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Intégrale <span class="sidebar-prix">16,99€</span></div><div class="sidebar-formule-desc">365j/an + nautique + loisirs</div></div>
+        <button class="btn-sidebar">Je souscris en 3 min →</button>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Pourquoi Mon Assurance Scolaire ?</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>TAN, Busway et vélo couverts</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Zone B — rentrée couverte dès j+1</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Toute la Métropole nantaise</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Attestation immédiate par email</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Certifié ORIAS & ACPR</div>
+      </div>
+    </div>
+  </div>
+  <div class="cta-band">
+    <h2>Assurez votre enfant nantais en 3 minutes</h2>
+    <p>TAN + vélo couverts · Zone B · Attestation immédiate · Dès 6,99€/an · Toute la Loire-Atlantique</p>
+    <button>Souscrire Mon Assurance Scolaire maintenant →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE BORDEAUX
+═══════════════════════════════════════════ -->
+<div class="page" id="page-bordeaux">
+  <div class="nav">
+    <div class="logo"><div class="logo-mark"><svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white"/><path d="M5 8L7 10L11 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Mon Assurance Scolaire</div>
+    <button class="nav-cta">Je souscris →</button>
+  </div>
+  <div class="hero-local">
+    <div class="breadcrumb">Accueil › Assurance scolaire › <span>Bordeaux</span></div>
+    <h1>Assurance scolaire <em>Bordeaux</em> — RC enfant, TBM couvert, attestation immédiate</h1>
+    <p class="intro">Bordeaux, ville en plein essor démographique. 4,7% des élèves de France sont dans l'académie de Bordeaux. Souscrivez Mon Assurance Scolaire en 3 minutes, attestation immédiate.</p>
+    <div class="hero-btns">
+      <button class="btn-main">Souscrire Mon Assurance Scolaire dès 6,99€ →</button>
+      <button class="btn-ghost">Voir les formules</button>
+    </div>
+    <div class="stats-local">
+      <div class="stat-card"><div class="stat-val">4,7 %</div><div class="stat-label">des élèves de France dans l'académie de Bordeaux</div></div>
+      <div class="stat-card"><div class="stat-val">Top 3</div><div class="stat-label">villes françaises ayant le plus crû démographiquement ces 10 ans</div></div>
+      <div class="stat-card"><div class="stat-val">Zone A</div><div class="stat-label">Bordeaux est en zone scolaire A — mêmes vacances que Lyon</div></div>
+      <div class="stat-card"><div class="stat-val">Dès 6,99€</div><div class="stat-label">par an et par enfant, sans franchise</div></div>
+    </div>
+  </div>
+  <div class="content-wrap">
+    <div class="article">
+      <h2>Bordeaux, ville en plein boom démographique : l'assurance scolaire pour les nouvelles familles</h2>
+      <p>Bordeaux a connu l'un des plus forts booms démographiques de France sur la dernière décennie, dopé par la mise en service de la LGV Paris-Bordeaux en 2017. Cette croissance a entraîné une hausse significative des effectifs scolaires dans la métropole girondine, avec de nombreux nouveaux établissements ouverts dans les communes périphériques (Mérignac, Pessac, Villenave-d'Ornon, Bègles...).</p>
+      <p>Le réseau <strong>TBM (Transports Bordeaux Métropole)</strong> — qui comprend tramway (lignes A, B, C et D), bus et bateaux-bus sur la Garonne — est le cœur des déplacements scolaires bordelais. Nos formules Sérénité et Intégrale couvrent l'ensemble de ces modes de transport sur les trajets domicile-école.</p>
+      <div class="highlight-box"><p><strong>Bordeaux en zone A :</strong> L'académie de Bordeaux partage le calendrier scolaire de la zone A avec Lyon, Nantes et d'autres académies. Les vacances sont donc décalées par rapport à Paris (zone C) et Montpellier (zone C). La couverture Mon Assurance Scolaire démarre à la date que vous choisissez lors de la souscription.</p></div>
+      <div class="info-grid">
+        <div class="info-card"><div class="info-card-title">Réseau TBM</div><div class="info-card-val">Tramway A/B/C/D, bus, bateaux-bus Garonne — couverts</div></div>
+        <div class="info-card"><div class="info-card-title">Vélo</div><div class="info-card-val">V3 (Vélo à 3€/an), pistes cyclables — trajet vélo couvert</div></div>
+        <div class="info-card"><div class="info-card-title">Zone A</div><div class="info-card-val">Mêmes vacances que Lyon, Nantes, Rennes, Toulouse (non)</div></div>
+        <div class="info-card"><div class="info-card-title">Boom démographique</div><div class="info-card-val">Nouveaux établissements à Mérignac, Pessac, Bègles, Bruges...</div></div>
+      </div>
+      <h2>Les formules Mon Assurance Scolaire pour Bordeaux</h2>
+      <table class="formules-table">
+        <thead><tr><th>Garantie</th><th>Essentielle<br><small>6,99€/an</small></th><th class="recommended-col">Sérénité ★<br><small>9,99€/an</small></th><th>Intégrale<br><small>16,99€/an</small></th></tr></thead>
+        <tbody>
+          <tr><td>Garantie individuelle accident scolaire</td><td class="check">✓</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Responsabilité civile scolaire</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Trajet TBM (tram, bus, bateau-bus)</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Trajet à vélo (V3)</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Sport, loisirs 365j/an</td><td class="cross">—</td><td class="cross recommended-col">—</td><td class="check">✓</td></tr>
+          <tr><td>Frais médicaux</td><td>5 000€</td><td class="recommended-col">10 000€</td><td>20 000€</td></tr>
+          <tr><td><strong>Prix</strong></td><td><span class="prix-badge">6,99€</span></td><td class="recommended-col"><span class="prix-badge">9,99€</span></td><td><span class="prix-badge">16,99€</span></td></tr>
+        </tbody>
+      </table>
+      <h2>Communes de la Métropole couvertes</h2>
+      <div class="tags">
+        <span class="tag">Bordeaux</span><span class="tag">Mérignac</span><span class="tag">Pessac</span><span class="tag">Talence</span><span class="tag">Villenave-d'Ornon</span><span class="tag">Bègles</span><span class="tag">Bruges</span><span class="tag">Eysines</span><span class="tag">Le Bouscat</span><span class="tag">Gradignan</span><span class="tag">Mérignac</span><span class="tag">Libourne</span>
+      </div>
+      <h2>Questions fréquentes des parents bordelais</h2>
+      <div class="faq-local">
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant prend le tramway TBM pour aller au lycée — est-il couvert ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Nos formules Sérénité et Intégrale couvrent votre enfant sur les 4 lignes de tramway TBM (A, B, C, D), les bus et les bateaux-bus sur la Garonne, pour les trajets domicile-école aller et retour.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Nous venons d'arriver à Bordeaux (LGV) — comment souscrire rapidement avant la rentrée ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">C'est l'avantage de Mon Assurance Scolaire : tout se fait en ligne en 3 minutes, depuis votre téléphone ou votre ordinateur. Vous recevez votre attestation immédiatement par email, sans délai de carence. Idéal pour les familles qui viennent d'emménager à Bordeaux.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant est scolarisé à Mérignac ou Pessac — la couverture s'étend à toute la métropole ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Mon Assurance Scolaire couvre votre enfant dans toute la Métropole de Bordeaux et dans l'ensemble de l'académie de Bordeaux (Gironde, Dordogne, Landes, Lot-et-Garonne, Pyrénées-Atlantiques).</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant fait de la voile sur le Bassin d'Arcachon ou du surf à Lacanau — quelle formule ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">La formule Intégrale à 16,99€/an est recommandée. Elle couvre les activités sportives nautiques en dehors du temps scolaire, 365 jours par an. Vérifiez les conditions générales pour les sports de glisse spécifiques (surf, kitesurf...).</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Bordeaux est en zone A — comment ça affecte-t-il ma couverture Mon Assurance Scolaire ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">La zone scolaire n'affecte pas la couverture Mon Assurance Scolaire. Vous choisissez votre date de début lors de la souscription et le contrat couvre votre enfant sur toute l'année scolaire 2025-2026, quelle que soit la zone.</div></div>
+      </div>
+      <h2>Assurance scolaire dans les autres villes</h2>
+      <div class="villes-grid">
+        <div class="ville-link">Paris 🗼</div><div class="ville-link">Lyon 🦁</div><div class="ville-link" onclick="showPage('marseille',null)">Marseille 🌊</div>
+        <div class="ville-link" onclick="showPage('toulouse',null)">Toulouse ✈️</div><div class="ville-link" onclick="showPage('nice',null)">Nice 🌴</div><div class="ville-link" onclick="showPage('nantes',null)">Nantes 🏰</div>
+        <div class="ville-link active">Bordeaux 🍷</div><div class="ville-link" onclick="showPage('montpellier',null)">Montpellier 🌞</div><div class="ville-link" onclick="showPage('strasbourg',null)">Strasbourg 🥨</div><div class="ville-link" onclick="showPage('lille',null)">Lille 🍺</div>
+      </div>
+      <p class="schema-note"><strong>Sources :</strong> DEPP 2025 (Bordeaux : 4,7% des élèves de France) — TBM Bordeaux Métropole — Académie de Bordeaux. Mon Assurance Scolaire est un courtier enregistré à l'ORIAS, soumis au contrôle de l'ACPR.</p>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">Souscrire pour Bordeaux</div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Essentielle <span class="sidebar-prix">6,99€</span></div><div class="sidebar-formule-desc">Accident scolaire — sans RC</div></div>
+        <div class="sidebar-formule best"><div class="sidebar-formule-name">⭐ Sérénité <span class="sidebar-prix">9,99€</span></div><div class="sidebar-formule-desc">RC + TBM + vélo V3 couverts</div></div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Intégrale <span class="sidebar-prix">16,99€</span></div><div class="sidebar-formule-desc">365j/an + surf + voile</div></div>
+        <button class="btn-sidebar">Je souscris en 3 min →</button>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Pourquoi Mon Assurance Scolaire ?</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>TBM tram + bus + bateau-bus couverts</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Attestation immédiate — zéro délai</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Toute la Gironde et l'académie</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Certifié ORIAS & ACPR</div>
+      </div>
+    </div>
+  </div>
+  <div class="cta-band">
+    <h2>Assurez votre enfant bordelais en 3 minutes</h2>
+    <p>TBM couvert · Zone A · Attestation immédiate · Dès 6,99€/an · Toute la Gironde</p>
+    <button>Souscrire Mon Assurance Scolaire maintenant →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE MONTPELLIER
+═══════════════════════════════════════════ -->
+<div class="page" id="page-montpellier">
+  <div class="nav">
+    <div class="logo"><div class="logo-mark"><svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white"/><path d="M5 8L7 10L11 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Mon Assurance Scolaire</div>
+    <button class="nav-cta">Je souscris →</button>
+  </div>
+  <div class="hero-local">
+    <div class="breadcrumb">Accueil › Assurance scolaire › <span>Montpellier</span></div>
+    <h1>Assurance scolaire <em>Montpellier</em> — RC enfant, TAM couvert, attestation immédiate</h1>
+    <p class="intro">Montpellier, ville la plus dynamique de France depuis 30 ans. 4,1% des élèves de France sont dans l'académie de Montpellier. Souscrivez Mon Assurance Scolaire en 3 minutes.</p>
+    <div class="hero-btns">
+      <button class="btn-main">Souscrire Mon Assurance Scolaire dès 6,99€ →</button>
+      <button class="btn-ghost">Voir les formules</button>
+    </div>
+    <div class="stats-local">
+      <div class="stat-card"><div class="stat-val">4,1 %</div><div class="stat-label">des élèves de France dans l'académie de Montpellier</div></div>
+      <div class="stat-card"><div class="stat-val">N°1</div><div class="stat-label">ville française pour la croissance démographique sur 30 ans</div></div>
+      <div class="stat-card"><div class="stat-val">Zone C</div><div class="stat-label">Montpellier est en zone C — mêmes vacances que Paris et Toulouse</div></div>
+      <div class="stat-card"><div class="stat-val">Dès 6,99€</div><div class="stat-label">par an et par enfant, sans franchise</div></div>
+    </div>
+  </div>
+  <div class="content-wrap">
+    <div class="article">
+      <h2>Montpellier, ville la plus dynamique de France : ce que les familles doivent savoir</h2>
+      <p>Montpellier est depuis 30 ans la <strong>ville ayant la plus forte croissance démographique de France</strong>. Cet afflux constant de nouvelles familles a créé une pression sur les équipements scolaires, avec de nombreuses constructions d'écoles dans les nouveaux quartiers (Odysseum, Port-Marianne, Maison-Blanche). La ville accueille également l'une des plus grandes universités de France, avec une forte population étudiante qui influence l'environnement scolaire.</p>
+      <p>Le réseau <strong>TAM (Transports de l'Agglomération de Montpellier)</strong> compte 5 lignes de tramway — l'une des plus denses de France — et un réseau de bus complet. Les enfants montpelliérains utilisent massivement ces transports pour leurs trajets scolaires, que nos formules couvrent intégralement.</p>
+      <div class="highlight-box"><p><strong>Zone C comme Paris :</strong> Montpellier partage le calendrier scolaire de la zone C avec Paris et Toulouse. Vos enfants ont les mêmes dates de vacances que leurs cousins parisiens, mais pas les mêmes que les enfants bordelais ou nantais (zone A). Mon Assurance Scolaire s'adapte à toutes les zones.</p></div>
+      <div class="info-grid">
+        <div class="info-card"><div class="info-card-title">Réseau TAM</div><div class="info-card-val">5 lignes de tramway + bus — l'un des réseaux les plus denses de France</div></div>
+        <div class="info-card"><div class="info-card-title">Vélo</div><div class="info-card-val">VéloMagg + pistes cyclables — trajet vélo couvert par Mon Assurance Scolaire</div></div>
+        <div class="info-card"><div class="info-card-title">Quartiers nouveaux</div><div class="info-card-val">Port-Marianne, Odysseum, Maison-Blanche — nouveaux établissements</div></div>
+        <div class="info-card"><div class="info-card-title">Étudiants</div><div class="info-card-val">60 000+ étudiants — Mon Assurance Scolaire couvre jusqu'aux études supérieures</div></div>
+      </div>
+      <h2>Les formules Mon Assurance Scolaire pour Montpellier</h2>
+      <table class="formules-table">
+        <thead><tr><th>Garantie</th><th>Essentielle<br><small>6,99€/an</small></th><th class="recommended-col">Sérénité ★<br><small>9,99€/an</small></th><th>Intégrale<br><small>16,99€/an</small></th></tr></thead>
+        <tbody>
+          <tr><td>Garantie individuelle accident scolaire</td><td class="check">✓</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Responsabilité civile scolaire</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Tramway TAM (5 lignes) + bus</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>VéloMagg et pistes cyclables</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Sport, loisirs méditerranéens 365j</td><td class="cross">—</td><td class="cross recommended-col">—</td><td class="check">✓</td></tr>
+          <tr><td>Frais médicaux</td><td>5 000€</td><td class="recommended-col">10 000€</td><td>20 000€</td></tr>
+          <tr><td><strong>Prix</strong></td><td><span class="prix-badge">6,99€</span></td><td class="recommended-col"><span class="prix-badge">9,99€</span></td><td><span class="prix-badge">16,99€</span></td></tr>
+        </tbody>
+      </table>
+      <h2>Communes couvertes</h2>
+      <div class="tags">
+        <span class="tag">Montpellier</span><span class="tag">Castelnau-le-Lez</span><span class="tag">Lattes</span><span class="tag">Pérols</span><span class="tag">Juvignac</span><span class="tag">Saint-Jean-de-Védas</span><span class="tag">Grabels</span><span class="tag">Clapiers</span><span class="tag">Palavas</span><span class="tag">Lunel</span><span class="tag">Sète</span>
+      </div>
+      <h2>Questions fréquentes des parents montpelliérains</h2>
+      <div class="faq-local">
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant prend le tramway TAM — l'une des 5 lignes est-elle couverte ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui, toutes les 5 lignes de tramway TAM sont couvertes (lignes 1, 2, 3, 4 et 5), ainsi que tous les bus du réseau, pour les trajets domicile-école aller et retour.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Nous habitons à Port-Marianne ou Odysseum — l'assurance couvre ces nouveaux quartiers ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui, absolument. Mon Assurance Scolaire couvre votre enfant dans tous les quartiers de Montpellier et dans toute l'agglomération, y compris les nouveaux quartiers en développement comme Port-Marianne, Odysseum et Maison-Blanche.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant est en licence à l'Université de Montpellier — Mon Assurance Scolaire couvre-t-il les étudiants ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Mon Assurance Scolaire couvre votre enfant jusqu'aux études supérieures (licence, master, BTS...). L'âge limite varie selon les formules — consultez les conditions générales pour les détails. C'est un avantage rare par rapport à certaines assurances scolaires classiques qui s'arrêtent au lycée.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>L'école de mon enfant est dans un nouveau quartier sans établissement historique — est-ce couvert ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Mon Assurance Scolaire couvre votre enfant dans tout établissement reconnu par l'Éducation nationale, qu'il soit récent ou historique, dans tous les quartiers de l'agglomération montpelliéraine.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Montpellier est en zone C — dois-je souscrire avant le 1er septembre ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Nous recommandons de souscrire avant le 1er septembre pour être couvert dès le premier jour de classe. Vous choisissez votre date de début lors de la souscription en ligne — l'attestation arrive instantanément par email.</div></div>
+      </div>
+      <h2>Assurance scolaire dans les autres villes</h2>
+      <div class="villes-grid">
+        <div class="ville-link">Paris 🗼</div><div class="ville-link">Lyon 🦁</div><div class="ville-link" onclick="showPage('marseille',null)">Marseille 🌊</div>
+        <div class="ville-link" onclick="showPage('toulouse',null)">Toulouse ✈️</div><div class="ville-link" onclick="showPage('nice',null)">Nice 🌴</div><div class="ville-link" onclick="showPage('nantes',null)">Nantes 🏰</div>
+        <div class="ville-link" onclick="showPage('bordeaux',null)">Bordeaux 🍷</div><div class="ville-link active">Montpellier 🌞</div><div class="ville-link" onclick="showPage('strasbourg',null)">Strasbourg 🥨</div><div class="ville-link" onclick="showPage('lille',null)">Lille 🍺</div>
+      </div>
+      <p class="schema-note"><strong>Sources :</strong> DEPP 2025 (Montpellier : 4,1% des élèves de France) — TAM Montpellier Méditerranée Métropole — Académie de Montpellier. Mon Assurance Scolaire, courtier enregistré à l'ORIAS, soumis au contrôle de l'ACPR.</p>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">Souscrire pour Montpellier</div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Essentielle <span class="sidebar-prix">6,99€</span></div><div class="sidebar-formule-desc">Accident scolaire — sans RC</div></div>
+        <div class="sidebar-formule best"><div class="sidebar-formule-name">⭐ Sérénité <span class="sidebar-prix">9,99€</span></div><div class="sidebar-formule-desc">RC + tramway TAM + vélo</div></div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Intégrale <span class="sidebar-prix">16,99€</span></div><div class="sidebar-formule-desc">365j/an + sports méditerranéens</div></div>
+        <button class="btn-sidebar">Je souscris en 3 min →</button>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Pourquoi Mon Assurance Scolaire ?</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>5 lignes de tram TAM couvertes</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Études supérieures couvertes</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Toute l'agglomération couverte</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Attestation immédiate par email</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Certifié ORIAS & ACPR</div>
+      </div>
+    </div>
+  </div>
+  <div class="cta-band">
+    <h2>Assurez votre enfant montpelliérain en 3 minutes</h2>
+    <p>5 lignes TAM couvertes · Zone C · Attestation immédiate · Dès 6,99€/an · Tout l'Hérault</p>
+    <button>Souscrire Mon Assurance Scolaire maintenant →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE STRASBOURG
+═══════════════════════════════════════════ -->
+<div class="page" id="page-strasbourg">
+  <div class="nav">
+    <div class="logo"><div class="logo-mark"><svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white"/><path d="M5 8L7 10L11 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Mon Assurance Scolaire</div>
+    <button class="nav-cta">Je souscris →</button>
+  </div>
+  <div class="hero-local">
+    <div class="breadcrumb">Accueil › Assurance scolaire › <span>Strasbourg</span></div>
+    <h1>Assurance scolaire <em>Strasbourg</em> — RC enfant, CTS couvert, attestation immédiate</h1>
+    <p class="intro">Strasbourg, capitale européenne bilingue. 2,7% des élèves de France dans l'académie de Strasbourg, dont de nombreuses classes franco-allemandes. Souscrivez Mon Assurance Scolaire en 3 minutes.</p>
+    <div class="hero-btns">
+      <button class="btn-main">Souscrire Mon Assurance Scolaire dès 6,99€ →</button>
+      <button class="btn-ghost">Voir les formules</button>
+    </div>
+    <div class="stats-local">
+      <div class="stat-card"><div class="stat-val">2,7 %</div><div class="stat-label">des élèves de France dans l'académie de Strasbourg</div></div>
+      <div class="stat-card"><div class="stat-val">~45</div><div class="stat-label">classes bilangues franco-allemandes dans l'académie</div></div>
+      <div class="stat-card"><div class="stat-val">N°1</div><div class="stat-label">ville cyclable de France — 600 km de pistes cyclables</div></div>
+      <div class="stat-card"><div class="stat-val">Dès 6,99€</div><div class="stat-label">par an et par enfant, sans franchise</div></div>
+    </div>
+  </div>
+  <div class="content-wrap">
+    <div class="article">
+      <h2>Strasbourg, capitale européenne : spécificités scolaires uniques en France</h2>
+      <p>Strasbourg est une ville scolaire unique en France. En tant que <strong>capitale européenne</strong> accueillant le Parlement européen et le Conseil de l'Europe, elle attire de très nombreuses familles d'eurodéputés, de fonctionnaires européens et d'expatriés de toute l'Europe. Cette situation crée une forte demande pour les <strong>établissements bilingues franco-allemands</strong> et les écoles européennes.</p>
+      <p>Strasbourg est également la <strong>ville la plus cyclable de France</strong> avec plus de 600 km de pistes cyclables. Un très grand nombre d'enfants s'y rendent à l'école à vélo, ce qui fait du trajet cycliste un enjeu spécifique pour l'assurance scolaire. Le réseau <strong>CTS (Compagnie des Transports Strasbourgeois)</strong> — tramway (7 lignes) et bus — complète les déplacements scolaires.</p>
+      <div class="highlight-box"><p><strong>Spécificité alsacienne — droit local :</strong> L'Alsace et la Moselle bénéficient d'un régime juridique spécial (droit local alsacien-mosellan) hérité du droit allemand, notamment en matière d'assurance. Cela n'affecte pas votre contrat Mon Assurance Scolaire, régi par le droit des assurances français, mais il est bon de le savoir.</p></div>
+      <div class="info-grid">
+        <div class="info-card"><div class="info-card-title">Réseau CTS</div><div class="info-card-val">7 lignes de tramway + bus — l'un des plus denses de France</div></div>
+        <div class="info-card"><div class="info-card-title">Vélo</div><div class="info-card-val">600 km de pistes — N°1 France — trajet vélo couvert</div></div>
+        <div class="info-card"><div class="info-card-title">Établissements bilingues</div><div class="info-card-val">Classes franco-allemandes, écoles européennes — tous couverts</div></div>
+        <div class="info-card"><div class="info-card-title">Zone B</div><div class="info-card-val">Strasbourg est en zone B — mêmes vacances que Nantes et Rennes</div></div>
+      </div>
+      <h2>Les formules Mon Assurance Scolaire pour Strasbourg</h2>
+      <table class="formules-table">
+        <thead><tr><th>Garantie</th><th>Essentielle<br><small>6,99€/an</small></th><th class="recommended-col">Sérénité ★<br><small>9,99€/an</small></th><th>Intégrale<br><small>16,99€/an</small></th></tr></thead>
+        <tbody>
+          <tr><td>Garantie individuelle accident scolaire</td><td class="check">✓</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Responsabilité civile scolaire</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Tramway CTS (7 lignes) + bus</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Trajet à vélo (N°1 France)</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Établissements bilingues inclus</td><td class="check">✓</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Sport, loisirs 365j/an</td><td class="cross">—</td><td class="cross recommended-col">—</td><td class="check">✓</td></tr>
+          <tr><td>Frais médicaux</td><td>5 000€</td><td class="recommended-col">10 000€</td><td>20 000€</td></tr>
+          <tr><td><strong>Prix</strong></td><td><span class="prix-badge">6,99€</span></td><td class="recommended-col"><span class="prix-badge">9,99€</span></td><td><span class="prix-badge">16,99€</span></td></tr>
+        </tbody>
+      </table>
+      <div class="highlight-box"><p><strong>Conseil Strasbourg :</strong> La formule Sérénité est idéale pour la plupart des familles strasbourgeoises. Elle couvre à la fois le trajet à vélo (très fréquent à Strasbourg) et le tramway CTS. Si votre enfant pratique le ski en Alsace (Vosges, Feldberg allemand...) ou des sports d'hiver, optez pour la formule Intégrale.</p></div>
+      <h2>Communes couvertes</h2>
+      <div class="tags">
+        <span class="tag">Strasbourg</span><span class="tag">Schiltigheim</span><span class="tag">Illkirch</span><span class="tag">Hoenheim</span><span class="tag">Lingolsheim</span><span class="tag">Ostwald</span><span class="tag">Bischheim</span><span class="tag">Colmar</span><span class="tag">Mulhouse</span><span class="tag">Sélestat</span><span class="tag">Saverne</span>
+      </div>
+      <h2>Questions fréquentes des parents strasbourgeois</h2>
+      <div class="faq-local">
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant est dans une classe bilingue franco-allemande — Mon Assurance Scolaire couvre-t-il ce type d'établissement ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Mon Assurance Scolaire couvre votre enfant dans tous les établissements reconnus par l'Éducation nationale française, y compris les classes bilingues franco-allemandes, les sections européennes et les établissements franco-étrangers. La langue d'enseignement n'a aucune incidence.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant va à l'école à vélo — Strasbourg étant la ville la plus cyclable de France, est-il bien couvert ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui, c'est d'ailleurs pourquoi nous le mentionnons explicitement pour Strasbourg. Nos formules Sérénité et Intégrale couvrent votre enfant sur son trajet à vélo domicile-école, sur toutes les pistes cyclables strasbourgeoises, aller et retour.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Nous sommes une famille d'eurodéputés basée à Strasbourg — Mon Assurance Scolaire convient-il aux familles expatriées ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Mon Assurance Scolaire est ouvert aux résidents européens. Lors de la souscription, vous pouvez indiquer votre pays de résidence parmi les pays de l'Union européenne. Votre enfant doit être scolarisé dans un établissement reconnu par l'Éducation nationale française.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant fait du ski aux Vosges ou en Allemagne le week-end — quelle formule ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">La formule Intégrale à 16,99€/an couvre les activités sportives extrascolaires 365 jours par an, y compris le ski aux Vosges. Pour les activités pratiquées en Allemagne (Schwarzwald, Feldberg...), vérifiez la couverture géographique dans les conditions générales.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Le droit local alsacien change-t-il quelque chose à mon contrat Mon Assurance Scolaire ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Non. Le contrat Mon Assurance Scolaire est régi par le droit des assurances français, applicable dans toute la France. Le droit local alsacien-mosellan ne s'applique pas aux contrats d'assurance souscrits auprès de courtiers régis par le Code des assurances et la réglementation de l'ACPR.</div></div>
+      </div>
+      <h2>Assurance scolaire dans les autres villes</h2>
+      <div class="villes-grid">
+        <div class="ville-link">Paris 🗼</div><div class="ville-link">Lyon 🦁</div><div class="ville-link" onclick="showPage('marseille',null)">Marseille 🌊</div>
+        <div class="ville-link" onclick="showPage('toulouse',null)">Toulouse ✈️</div><div class="ville-link" onclick="showPage('nice',null)">Nice 🌴</div><div class="ville-link" onclick="showPage('nantes',null)">Nantes 🏰</div>
+        <div class="ville-link" onclick="showPage('bordeaux',null)">Bordeaux 🍷</div><div class="ville-link" onclick="showPage('montpellier',null)">Montpellier 🌞</div><div class="ville-link active">Strasbourg 🥨</div><div class="ville-link" onclick="showPage('lille',null)">Lille 🍺</div>
+      </div>
+      <p class="schema-note"><strong>Sources :</strong> DEPP 2025 (Strasbourg : 2,7% des élèves de France) — CTS Strasbourg — Académie de Strasbourg — Eurométropole de Strasbourg (600 km de pistes cyclables). Mon Assurance Scolaire, courtier enregistré à l'ORIAS, soumis au contrôle de l'ACPR.</p>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">Souscrire pour Strasbourg</div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Essentielle <span class="sidebar-prix">6,99€</span></div><div class="sidebar-formule-desc">Accident scolaire — sans RC</div></div>
+        <div class="sidebar-formule best"><div class="sidebar-formule-name">⭐ Sérénité <span class="sidebar-prix">9,99€</span></div><div class="sidebar-formule-desc">RC + tram CTS + vélo couverts</div></div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Intégrale <span class="sidebar-prix">16,99€</span></div><div class="sidebar-formule-desc">365j/an + ski Vosges + loisirs</div></div>
+        <button class="btn-sidebar">Je souscris en 3 min →</button>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Pourquoi Mon Assurance Scolaire ?</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>7 lignes CTS + vélo couverts</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Classes bilingues incluses</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Familles européennes bienvenues</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Attestation immédiate par email</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Certifié ORIAS & ACPR</div>
+      </div>
+    </div>
+  </div>
+  <div class="cta-band">
+    <h2>Assurez votre enfant strasbourgeois en 3 minutes</h2>
+    <p>CTS + vélo couverts · Bilingue inclus · Attestation immédiate · Dès 6,99€/an · Tout le Bas-Rhin</p>
+    <button>Souscrire Mon Assurance Scolaire maintenant →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE LILLE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-lille">
+  <div class="nav">
+    <div class="logo"><div class="logo-mark"><svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white"/><path d="M5 8L7 10L11 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Mon Assurance Scolaire</div>
+    <button class="nav-cta">Je souscris →</button>
+  </div>
+  <div class="hero-local">
+    <div class="breadcrumb">Accueil › Assurance scolaire › <span>Lille</span></div>
+    <h1>Assurance scolaire <em>Lille</em> — RC enfant, Ilévia couvert, attestation immédiate</h1>
+    <p class="intro">Lille, 3e académie de France avec 6,3% des élèves. Métropole transfrontalière franco-belge. Souscrivez Mon Assurance Scolaire en 3 minutes, attestation PDF immédiate.</p>
+    <div class="hero-btns">
+      <button class="btn-main">Souscrire Mon Assurance Scolaire dès 6,99€ →</button>
+      <button class="btn-ghost">Voir les formules</button>
+    </div>
+    <div class="stats-local">
+      <div class="stat-card"><div class="stat-val">6,3 %</div><div class="stat-label">des élèves de France dans l'académie de Lille — 3e académie de France</div></div>
+      <div class="stat-card"><div class="stat-val">~756 000</div><div class="stat-label">élèves dans l'académie de Lille (Nord-Pas-de-Calais)</div></div>
+      <div class="stat-card"><div class="stat-val">Transfrontalier</div><div class="stat-label">Nombreuses familles franco-belges, écoles à cheval sur la frontière</div></div>
+      <div class="stat-card"><div class="stat-val">Dès 6,99€</div><div class="stat-label">par an et par enfant, sans franchise</div></div>
+    </div>
+  </div>
+  <div class="content-wrap">
+    <div class="article">
+      <h2>Lille, 3e académie de France : ce que les familles lilloises doivent savoir</h2>
+      <p>L'académie de Lille est la <strong>3e académie de France par le nombre d'élèves</strong> avec 6,3% des effectifs nationaux — environ 756 000 élèves dans le Nord-Pas-de-Calais. La Métropole Européenne de Lille (MEL) est un territoire scolaire dense, avec une forte proportion d'établissements catholiques sous contrat dans le Nord, traditionnellement l'une des régions françaises où le réseau privé est le plus développé.</p>
+      <p>La particularité lilloise est sa <strong>dimension transfrontalière</strong> : de nombreuses familles habitent à Tourcoing, Roubaix, Mouscron (Belgique) ou Tournai et scolarisent leurs enfants en France. Le réseau <strong>Ilévia</strong> (métro, tramway, bus — anciennement Transpole) dessert l'ensemble de la métropole. À noter : Lille est en <strong>zone B</strong> du calendrier scolaire.</p>
+      <div class="highlight-box"><p><strong>Forte tradition de l'enseignement privé :</strong> Le Nord est historiquement l'une des régions françaises avec la plus forte proportion d'établissements catholiques sous contrat. Environ 35% des élèves lillois sont scolarisés dans le privé — Mon Assurance Scolaire couvre les deux secteurs sans distinction de tarif.</p></div>
+      <div class="info-grid">
+        <div class="info-card"><div class="info-card-title">Réseau Ilévia</div><div class="info-card-val">Métro (VAL), tramway, bus — L'un des rares métros automatiques de France</div></div>
+        <div class="info-card"><div class="info-card-title">Privé catholique</div><div class="info-card-val">~35% des élèves lillois dans l'enseignement privé — tous couverts</div></div>
+        <div class="info-card"><div class="info-card-title">Transfrontalier</div><div class="info-card-val">Familles franco-belges, enfants scolarisés en France depuis la Belgique</div></div>
+        <div class="info-card"><div class="info-card-title">Zone B</div><div class="info-card-val">Mêmes vacances que Strasbourg, Nantes, Rennes, Nice</div></div>
+      </div>
+      <h2>Les formules Mon Assurance Scolaire pour Lille</h2>
+      <table class="formules-table">
+        <thead><tr><th>Garantie</th><th>Essentielle<br><small>6,99€/an</small></th><th class="recommended-col">Sérénité ★<br><small>9,99€/an</small></th><th>Intégrale<br><small>16,99€/an</small></th></tr></thead>
+        <tbody>
+          <tr><td>Garantie individuelle accident scolaire</td><td class="check">✓</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Responsabilité civile scolaire</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Métro VAL, tramway, bus Ilévia</td><td class="cross">—</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Public et privé catholique inclus</td><td class="check">✓</td><td class="check recommended-col">✓</td><td class="check">✓</td></tr>
+          <tr><td>Sport, loisirs 365j/an</td><td class="cross">—</td><td class="cross recommended-col">—</td><td class="check">✓</td></tr>
+          <tr><td>Frais médicaux</td><td>5 000€</td><td class="recommended-col">10 000€</td><td>20 000€</td></tr>
+          <tr><td><strong>Prix</strong></td><td><span class="prix-badge">6,99€</span></td><td class="recommended-col"><span class="prix-badge">9,99€</span></td><td><span class="prix-badge">16,99€</span></td></tr>
+        </tbody>
+      </table>
+      <h2>Communes de la Métropole couvertes</h2>
+      <div class="tags">
+        <span class="tag">Lille</span><span class="tag">Roubaix</span><span class="tag">Tourcoing</span><span class="tag">Villeneuve-d'Ascq</span><span class="tag">Mouvaux</span><span class="tag">Wasquehal</span><span class="tag">Marcq-en-Barœul</span><span class="tag">Lambersart</span><span class="tag">Armentières</span><span class="tag">Douai</span><span class="tag">Valenciennes</span><span class="tag">Dunkerque</span>
+      </div>
+      <h2>Questions fréquentes des parents lillois</h2>
+      <div class="faq-local">
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant prend le métro VAL Ilévia seul — est-il couvert sur le trajet ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Le métro VAL de Lille est l'un des rares métros entièrement automatiques de France. Nos formules Sérénité et Intégrale couvrent votre enfant sur tout le réseau Ilévia (métro lignes 1 et 2, tramway, bus) pour les trajets domicile-école aller et retour.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant est dans un collège catholique privé sous contrat — Mon Assurance Scolaire le couvre-t-il pareil ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui, sans aucune distinction. Mon Assurance Scolaire couvre votre enfant dans les établissements publics comme dans les établissements privés sous contrat (dont les établissements catholiques, très nombreux dans le Nord), au même tarif et avec les mêmes garanties.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Nous habitons en Belgique et notre enfant est scolarisé à Lille — peut-on souscrire Mon Assurance Scolaire ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Mon Assurance Scolaire est accessible aux résidents européens (UE). Si votre enfant est scolarisé dans un établissement de l'académie de Lille, vous pouvez souscrire en indiquant la Belgique comme pays de résidence lors de la souscription. Contactez-nous pour valider votre situation transfrontalière.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant est scolarisé à Roubaix ou Tourcoing — la couverture est-elle identique ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Oui. Mon Assurance Scolaire couvre votre enfant dans toute la Métropole Européenne de Lille (MEL) et dans l'ensemble de l'académie de Lille (Nord et Pas-de-Calais). Roubaix, Tourcoing, Villeneuve-d'Ascq, Valenciennes, Douai, Dunkerque sont tous inclus.</div></div>
+        <div class="faq-local-item" onclick="toggleFaq(this)"><div class="faq-local-q"><span>Mon enfant fait du football dans un club lillois le week-end — quelle formule choisir ?</span><div class="faq-arrow"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,3 5,7 8,3" stroke="#6b7280" stroke-width="1.5"/></svg></div></div><div class="faq-local-a">Lille étant une grande ville de football, nous recommandons la formule Intégrale à 16,99€/an. Elle couvre votre enfant 365 jours par an lors de ses entraînements et matchs en dehors du temps scolaire, y compris les déplacements hors académie pour les compétitions.</div></div>
+      </div>
+      <h2>Assurance scolaire dans les autres villes</h2>
+      <div class="villes-grid">
+        <div class="ville-link">Paris 🗼</div><div class="ville-link">Lyon 🦁</div><div class="ville-link" onclick="showPage('marseille',null)">Marseille 🌊</div>
+        <div class="ville-link" onclick="showPage('toulouse',null)">Toulouse ✈️</div><div class="ville-link" onclick="showPage('nice',null)">Nice 🌴</div><div class="ville-link" onclick="showPage('nantes',null)">Nantes 🏰</div>
+        <div class="ville-link" onclick="showPage('bordeaux',null)">Bordeaux 🍷</div><div class="ville-link" onclick="showPage('montpellier',null)">Montpellier 🌞</div><div class="ville-link" onclick="showPage('strasbourg',null)">Strasbourg 🥨</div><div class="ville-link active">Lille 🍺</div>
+      </div>
+      <p class="schema-note"><strong>Sources :</strong> DEPP 2025 (Lille : 6,3% des élèves de France) — Ilévia / Métropole Européenne de Lille — Académie de Lille. Mon Assurance Scolaire est un courtier enregistré à l'ORIAS, soumis au contrôle de l'ACPR. Projections DEPP 2025-2035 : l'académie de Lille enregistrera la plus forte baisse d'effectifs d'ici 2035 (-20,7%), mais reste la 3e académie de France aujourd'hui.</p>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">Souscrire pour Lille</div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Essentielle <span class="sidebar-prix">6,99€</span></div><div class="sidebar-formule-desc">Accident scolaire — sans RC</div></div>
+        <div class="sidebar-formule best"><div class="sidebar-formule-name">⭐ Sérénité <span class="sidebar-prix">9,99€</span></div><div class="sidebar-formule-desc">RC + métro VAL + bus Ilévia</div></div>
+        <div class="sidebar-formule"><div class="sidebar-formule-name">Intégrale <span class="sidebar-prix">16,99€</span></div><div class="sidebar-formule-desc">365j/an + sport + loisirs</div></div>
+        <button class="btn-sidebar">Je souscris en 3 min →</button>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Pourquoi Mon Assurance Scolaire ?</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Métro VAL, tram, bus couverts</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Public et privé catholique inclus</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Familles franco-belges acceptées</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Attestation immédiate par email</div>
+        <div class="trust-item-side"><div class="trust-dot"></div>Certifié ORIAS & ACPR</div>
+      </div>
+    </div>
+  </div>
+  <div class="cta-band">
+    <h2>Assurez votre enfant lillois en 3 minutes</h2>
+    <p>Ilévia couvert · Zone B · Transfrontalier · Attestation immédiate · Dès 6,99€/an · Tout le Nord</p>
+    <button>Souscrire Mon Assurance Scolaire maintenant →</button>
+  </div>
+</div>
+
+<script>
+function showPage(ville, linkEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + ville).classList.add('active');
+  document.querySelectorAll('.ville-nav a').forEach(a => a.classList.remove('active'));
+  if (linkEl) linkEl.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function toggleFaq(el) {
+  const isOpen = el.classList.contains('open');
+  const parent = el.closest('.page');
+  parent.querySelectorAll('.faq-local-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) el.classList.add('open');
+}
+</script>
+</body>
+</html>
